@@ -1,0 +1,11 @@
+com\ecommerce\filter\CharacterEncodingFilter.class
+com\ecommerce\servlet\DashboardServlet.class
+com\ecommerce\servlet\ProdutoServlet.class
+com\ecommerce\model\Usuario.class
+com\ecommerce\server\SimpleServer.class
+com\ecommerce\database\DatabaseConnection.class
+com\ecommerce\model\Produto.class
+com\ecommerce\dao\ProdutoDAO.class
+com\ecommerce\dao\UsuarioDAO.class
+com\ecommerce\server\SimpleServer$StaticFileHandler.class
+com\ecommerce\servlet\UsuarioServlet.class
