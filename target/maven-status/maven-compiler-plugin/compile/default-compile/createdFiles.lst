@@ -1,4 +1,5 @@
 com\ecommerce\filter\CharacterEncodingFilter.class
+com\ecommerce\config\EnvironmentConfig.class
 com\ecommerce\servlet\DashboardServlet.class
 com\ecommerce\servlet\ProdutoServlet.class
 com\ecommerce\model\Usuario.class

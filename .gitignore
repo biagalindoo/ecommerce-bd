@@ -1,0 +1,28 @@
+# Arquivos de configuração com senhas
+.env
+database.env
+
+# Arquivos compilados
+target/
+*.class
+*.jar
+*.war
+
+# Arquivos do IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp

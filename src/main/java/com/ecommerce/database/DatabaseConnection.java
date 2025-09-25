@@ -1,5 +1,6 @@
 package com.ecommerce.database;
 
+import com.ecommerce.config.EnvironmentConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,13 +8,19 @@ import java.sql.SQLException;
 /**
  * Classe para gerenciar conexão com o banco de dados MySQL
  * Usa SQL puro sem ORMs ou frameworks de abstração
+ * Configurações carregadas do arquivo .env
  */
 public class DatabaseConnection {
     
-    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_bd";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "biafera123";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    
+    // Configurações carregadas do arquivo .env
+    private static final String URL = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+            EnvironmentConfig.getDbHost(),
+            EnvironmentConfig.getDbPort(),
+            EnvironmentConfig.getDbName());
+    private static final String USERNAME = EnvironmentConfig.getDbUser();
+    private static final String PASSWORD = EnvironmentConfig.getDbPassword();
     
     private static DatabaseConnection instance;
     private Connection connection;
