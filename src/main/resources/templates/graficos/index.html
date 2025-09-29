@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos e Análises - E-commerce Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .grafico-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .grafico-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .grafico-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .grafico-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .grafico-description {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botão Voltar -->
+    <a href="/ecommerce-dashboard/" class="btn btn-light back-button">
+        <i class="fas fa-arrow-left me-2"></i>Voltar ao Dashboard
+    </a>
+
+    <!-- Header da Seção -->
+    <div class="section-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="display-4 mb-3">
+                        <i class="fas fa-chart-line me-3"></i>
+                        Gráficos e Análises
+                    </h1>
+                    <p class="lead">Visualizações detalhadas dos dados do e-commerce</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Gráfico 1 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-bar text-primary me-2"></i>
+                            Vendas por Mês
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico1.png" alt="Vendas por Mês" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Este gráfico mostra a evolução das vendas ao longo dos meses, permitindo identificar 
+                                    tendências sazonais e períodos de maior ou menor atividade comercial. 
+                                    É essencial para planejamento estratégico e análise de performance.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 2 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-pie text-success me-2"></i>
+                            Distribuição de Produtos por Categoria
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico2.png" alt="Distribuição por Categoria" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Gráfico de pizza que apresenta a distribuição percentual dos produtos por categoria, 
+                                    facilitando a identificação das categorias mais representativas no portfólio 
+                                    e auxiliando na tomada de decisões sobre estoque e marketing.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 3 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-line text-info me-2"></i>
+                            Crescimento de Usuários
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico3.png" alt="Crescimento de Usuários" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Linha temporal que demonstra o crescimento da base de usuários ao longo do tempo, 
+                                    indicando a taxa de aquisição de novos clientes e a evolução da base de usuários 
+                                    cadastrados na plataforma.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 4 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-area text-warning me-2"></i>
+                            Receita vs Despesas
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico4.png" alt="Receita vs Despesas" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Gráfico de área que compara receitas e despesas ao longo do tempo, 
+                                    permitindo visualizar a margem de lucro e identificar períodos de maior 
+                                    ou menor rentabilidade do negócio.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 5 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-bar text-danger me-2"></i>
+                            Top 10 Produtos Mais Vendidos
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico5.png" alt="Top 10 Produtos" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Ranking dos produtos com maior volume de vendas, essencial para identificar 
+                                    os produtos mais populares e orientar estratégias de marketing e estoque.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 6 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-pie text-secondary me-2"></i>
+                            Distribuição Geográfica de Vendas
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico6.png" alt="Distribuição Geográfica" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Mapa de calor ou gráfico de distribuição que mostra as vendas por região, 
+                                    auxiliando na identificação de mercados prioritários e planejamento de 
+                                    expansão geográfica.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 7 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-line text-dark me-2"></i>
+                            Taxa de Conversão
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico7.png" alt="Taxa de Conversão" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Gráfico que mostra a porcentagem de visitantes que se tornam clientes, 
+                                    indicando a eficácia das estratégias de conversão e a qualidade do funil de vendas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 8 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-bar text-primary me-2"></i>
+                            Análise de Estoque
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico8.png" alt="Análise de Estoque" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Visualização do status atual do estoque, mostrando produtos com baixo estoque, 
+                                    produtos em excesso e níveis ideais, facilitando a gestão de inventário.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 9 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-pie text-success me-2"></i>
+                            Métodos de Pagamento
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico9.png" alt="Métodos de Pagamento" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Distribuição das vendas por método de pagamento (cartão, boleto, PIX, etc.), 
+                                    auxiliando na compreensão das preferências dos clientes e otimização dos 
+                                    métodos de pagamento oferecidos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 10 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-line text-info me-2"></i>
+                            Satisfação do Cliente
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico10.png" alt="Satisfação do Cliente" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Gráfico que apresenta a evolução da satisfação dos clientes ao longo do tempo, 
+                                    baseado em avaliações e feedback, essencial para monitorar a qualidade do serviço.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 11 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-area text-warning me-2"></i>
+                            Análise de Abandono de Carrinho
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico11.png" alt="Abandono de Carrinho" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Visualização das etapas do funil de vendas onde os clientes abandonam o carrinho, 
+                                    identificando pontos de melhoria no processo de checkout e conversão.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 12 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-bar text-danger me-2"></i>
+                            Performance de Campanhas
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico12.png" alt="Performance de Campanhas" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Comparativo de performance entre diferentes campanhas de marketing, 
+                                    mostrando ROI, conversões e engajamento, auxiliando na otimização 
+                                    do investimento em marketing.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 13 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-pie text-secondary me-2"></i>
+                            Segmentação de Clientes
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico13.png" alt="Segmentação de Clientes" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Distribuição dos clientes por segmentos (VIP, regulares, novos), 
+                                    baseada em valor de compra e frequência, facilitando estratégias 
+                                    de relacionamento personalizadas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 14 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-line text-dark me-2"></i>
+                            Análise de Retorno de Clientes
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico14.png" alt="Retorno de Clientes" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Gráfico que mostra a taxa de retorno dos clientes e a frequência de compras, 
+                                    indicando a fidelização da base de clientes e a efetividade das estratégias 
+                                    de retenção.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 15 -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card grafico-card">
+                    <div class="card-body">
+                        <h3 class="grafico-title">
+                            <i class="fas fa-chart-area text-primary me-2"></i>
+                            Projeção de Crescimento
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="/images/graficos/grafico15.png" alt="Projeção de Crescimento" class="grafico-img">
+                            </div>
+                            <div class="col-md-6">
+                                <p class="grafico-description">
+                                    Projeção baseada em dados históricos e tendências de mercado, 
+                                    auxiliando no planejamento estratégico e definição de metas 
+                                    para os próximos períodos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 E-commerce Dashboard. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
