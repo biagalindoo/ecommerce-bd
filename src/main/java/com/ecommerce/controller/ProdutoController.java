@@ -102,6 +102,6 @@ public class ProdutoController {
             System.err.println("Erro ao excluir produto: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/ecommerce-dashboard/produtos";
+        return "redirect:/produtos";
     }
 }
