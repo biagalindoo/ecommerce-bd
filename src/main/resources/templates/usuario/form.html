@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<head>
+    <title>Novo Usuário - E-commerce</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-plus me-2"></i>Novo Usuário</h2>
+            <a th:href="@{/usuario}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Dados do Usuário</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/usuario/salvar}" th:object="${usuario}" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="primeiroNome" class="form-label">Primeiro Nome *</label>
+                                <input type="text" class="form-control" id="primeiroNome" 
+                                       th:field="*{primeiroNome}" placeholder="Digite o primeiro nome">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('primeiroNome')}" 
+                                     th:errors="*{primeiroNome}">Erro no primeiro nome</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sobrenome" class="form-label">Sobrenome *</label>
+                                <input type="text" class="form-control" id="sobrenome" 
+                                       th:field="*{sobrenome}" placeholder="Digite o sobrenome">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('sobrenome')}" 
+                                     th:errors="*{sobrenome}">Erro no sobrenome</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" 
+                                       th:field="*{email}" placeholder="Digite o email">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" 
+                                     th:errors="*{email}">Erro no email</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Salvar
+                            </button>
+                            <a th:href="@{/usuario}" class="btn btn-secondary ms-2">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

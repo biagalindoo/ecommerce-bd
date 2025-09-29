@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<head>
+    <title>Produtos - E-commerce</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Header com botão de novo produto -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="fas fa-box me-2"></i>Produtos</h2>
+                <p class="text-muted">Total de produtos: <span th:text="${totalProdutos}">0</span></p>
+            </div>
+            <a th:href="@{/produto/novo}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Novo Produto
+            </a>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" th:action="@{/produto}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" 
+                                   th:value="${param.nome}" placeholder="Buscar por nome...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <input type="text" class="form-control" id="categoria" name="categoria" 
+                                   th:value="${param.categoria}" placeholder="Buscar por categoria...">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="estoqueBaixo" name="estoqueBaixo" value="true"
+                                       th:checked="${param.estoqueBaixo != null}">
+                                <label class="form-check-label" for="estoqueBaixo">
+                                    Apenas estoque baixo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-2"></i>Buscar
+                            </button>
+                            <a th:href="@{/produto}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Limpar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tabela de produtos -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lista de Produtos</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="produto : ${produtos}">
+                                <td th:text="${produto.id}">1</td>
+                                <td th:text="${produto.nome}">Nome do Produto</td>
+                                <td th:text="${produto.categoria}">Categoria</td>
+                                <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 0,00</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${produto.quantidadeEstoque == 0} ? 'bg-danger' : 
+                                                         (${produto.quantidadeEstoque < 10}) ? 'bg-warning' : 'bg-success'"
+                                          th:text="${produto.quantidadeEstoque}">0</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${produto.quantidadeEstoque == 0}">Esgotado</span>
+                                    <span class="badge bg-warning" th:if="${produto.quantidadeEstoque > 0 and produto.quantidadeEstoque < 10}">Estoque Baixo</span>
+                                    <span class="badge bg-success" th:if="${produto.quantidadeEstoque >= 10}">Disponível</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/produto/detalhes/{id}(id=${produto.id})}" 
+                                           class="btn btn-sm btn-outline-info" title="Detalhes">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/produto/editar/{id}(id=${produto.id})}" 
+                                           class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a th:href="@{/produto/excluir/{id}(id=${produto.id})}" 
+                                           class="btn btn-sm btn-outline-danger" title="Excluir"
+                                           onclick="return confirm('Tem certeza que deseja excluir este produto?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${produtos.empty}">
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-box fa-3x mb-3"></i>
+                                    <p>Nenhum produto encontrado</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

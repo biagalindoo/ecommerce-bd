@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<head>
+    <title>Dashboard - E-commerce</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Estatísticas Gerais -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total de Usuários
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsuarios}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total de Produtos
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalProdutos}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Estoque Baixo
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalEstoqueBaixo}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                    Produtos Esgotados
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalEsgotados}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estatísticas de Usuários -->
+        <div class="row mb-4">
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Usuários com Pedidos
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsuariosComPedidos}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-6 col-md-6 mb-4">
+                <div class="card border-left-secondary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                    Usuários sem Pedidos
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsuariosSemPedidos}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-slash fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produtos com Estoque Baixo -->
+        <div class="row mb-4" th:if="${totalEstoqueBaixo > 0}">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Produtos com Estoque Baixo
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Categoria</th>
+                                        <th>Estoque</th>
+                                        <th>Preço</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="produto : ${produtosEstoqueBaixo}">
+                                        <td th:text="${produto.nome}">Nome do Produto</td>
+                                        <td th:text="${produto.categoria}">Categoria</td>
+                                        <td>
+                                            <span class="badge bg-warning" th:text="${produto.quantidadeEstoque}">0</span>
+                                        </td>
+                                        <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 0,00</td>
+                                        <td>
+                                            <span class="badge bg-warning" th:if="${produto.quantidadeEstoque < 10 and produto.quantidadeEstoque > 0}">Estoque Baixo</span>
+                                            <span class="badge bg-danger" th:if="${produto.quantidadeEstoque == 0}">Esgotado</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produtos Mais Vendidos -->
+        <div class="row mb-4" th:if="${produtosMaisVendidos != null and !produtosMaisVendidos.empty}">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Produtos Mais Vendidos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Categoria</th>
+                                        <th>Preço</th>
+                                        <th>Estoque</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="produto : ${produtosMaisVendidos}">
+                                        <td th:text="${produto.nome}">Nome do Produto</td>
+                                        <td th:text="${produto.categoria}">Categoria</td>
+                                        <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 0,00</td>
+                                        <td>
+                                            <span class="badge bg-success" th:text="${produto.quantidadeEstoque}">0</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Valor Total do Estoque -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-dollar-sign me-2"></i>
+                            Valor Total do Estoque
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h2 class="text-success">
+                                <i class="fas fa-coins me-2"></i>
+                                <span th:text="${#numbers.formatDecimal(valorTotalEstoque, 1, 2)}">R$ 0,00</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .border-left-primary {
+            border-left: 0.25rem solid #4e73df !important;
+        }
+        .border-left-success {
+            border-left: 0.25rem solid #1cc88a !important;
+        }
+        .border-left-warning {
+            border-left: 0.25rem solid #f6c23e !important;
+        }
+        .border-left-danger {
+            border-left: 0.25rem solid #e74a3b !important;
+        }
+        .border-left-info {
+            border-left: 0.25rem solid #36b9cc !important;
+        }
+        .border-left-secondary {
+            border-left: 0.25rem solid #858796 !important;
+        }
+        .text-xs {
+            font-size: 0.7rem;
+        }
+        .font-weight-bold {
+            font-weight: 700 !important;
+        }
+        .text-gray-800 {
+            color: #5a5c69 !important;
+        }
+        .text-gray-300 {
+            color: #dddfeb !important;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::content})}">
+<head>
+    <title>Usuários - E-commerce</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Header com botão de novo usuário -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="fas fa-users me-2"></i>Usuários</h2>
+                <p class="text-muted">Total de usuários: <span th:text="${totalUsuarios}">0</span></p>
+            </div>
+            <a th:href="@{/usuario/novo}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Novo Usuário
+            </a>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" th:action="@{/usuario}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" 
+                                   th:value="${param.nome}" placeholder="Buscar por nome...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" name="cidade" 
+                                   th:value="${param.cidade}" placeholder="Buscar por cidade...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="estado" class="form-label">Estado</label>
+                            <input type="text" class="form-control" id="estado" name="estado" 
+                                   th:value="${param.estado}" placeholder="Buscar por estado...">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-2"></i>Buscar
+                            </button>
+                            <a th:href="@{/usuario}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Limpar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tabela de usuários -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lista de Usuários</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Data Cadastro</th>
+                                <th>Telefones</th>
+                                <th>Endereços</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="usuario : ${usuarios}">
+                                <td th:text="${usuario.id}">1</td>
+                                <td th:text="${usuario.nomeCompleto}">Nome Completo</td>
+                                <td th:text="${usuario.email}">email@exemplo.com</td>
+                                <td th:text="${#temporals.format(usuario.dataCadastro, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                                <td>
+                                    <span class="badge bg-info" th:text="${usuario.telefones != null ? usuario.telefones.size() : 0}">0</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${usuario.enderecos != null ? usuario.enderecos.size() : 0}">0</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/usuario/detalhes/{id}(id=${usuario.id})}" 
+                                           class="btn btn-sm btn-outline-info" title="Detalhes">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/usuario/editar/{id}(id=${usuario.id})}" 
+                                           class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a th:href="@{/usuario/excluir/{id}(id=${usuario.id})}" 
+                                           class="btn btn-sm btn-outline-danger" title="Excluir"
+                                           onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${usuarios.empty}">
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <p>Nenhum usuário encontrado</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

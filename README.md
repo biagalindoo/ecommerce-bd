@@ -82,9 +82,9 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
    mvn clean compile
    ```
 
-2. **Execute o servidor:**
+2. **Execute a aplicação Spring Boot:**
    ```bash
-   mvn jetty:run
+   mvn spring-boot:run
    ```
 
 3. **Acesse a aplicação:**
@@ -96,45 +96,46 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 
 ```
 ├── src/main/java/com/ecommerce/
-│   ├── config/           # Configurações (EnvironmentConfig)
-│   ├── database/         # Conexão com banco (DatabaseConnection)
-│   ├── model/           # Modelos de dados (Usuario, Produto)
-│   ├── dao/             # Data Access Objects (UsuarioDAO, ProdutoDAO)
-│   ├── servlet/         # Servlets (UsuarioServlet, ProdutoServlet, DashboardServlet)
-│   └── filter/          # Filtros (CharacterEncodingFilter)
-├── src/main/webapp/
-│   ├── WEB-INF/
-│   │   ├── views/       # Páginas JSP
-│   │   └── web.xml      # Configuração da aplicação
-│   └── css/             # Estilos CSS
+│   ├── entity/          # Entidades JPA (Usuario, Produto, etc.)
+│   ├── repository/      # Repositories Spring Data JPA
+│   ├── service/         # Services com lógica de negócio
+│   ├── controller/      # Controllers REST/Web
+│   └── EcommerceDashboardApplication.java # Classe principal Spring Boot
+├── src/main/resources/
+│   ├── templates/       # Templates Thymeleaf
+│   └── application.properties # Configurações Spring Boot
 ├── 01-create-tables.sql # Script de criação das tabelas
 ├── 02-populate-tables.sql # Script de população das tabelas
 ├── 03-consultas.sql     # Consultas SQL de exemplo
 ├── .env                 # Configurações do banco (não versionado)
 ├── env.example          # Template de configuração
+├── Dockerfile           # Configuração Docker
+├── docker-compose.yml   # Orquestração Docker
 └── pom.xml              # Configuração Maven
 ```
 
 ## 🔧 Funcionalidades
 
-- ✅ **Dashboard** com estatísticas
+- ✅ **Dashboard** com estatísticas em tempo real
 - ✅ **CRUD de Usuários** (criar, listar, editar, deletar)
 - ✅ **CRUD de Produtos** (criar, listar, editar, deletar)
-- ✅ **Busca** por nome em usuários e produtos
+- ✅ **Busca avançada** por nome, cidade, estado
 - ✅ **Filtro de estoque baixo** para produtos
-- ✅ **Validação de formulários**
-- ✅ **SQL puro** sem ORMs
+- ✅ **Validação de formulários** com Bean Validation
+- ✅ **Interface responsiva** com Bootstrap 5
+- ✅ **Templates Thymeleaf** para renderização
+- ✅ **Spring Data JPA** para acesso a dados
 - ✅ **Configuração via arquivo .env**
 
 ## 🛠️ Tecnologias
 
 - **Java 11+**
+- **Spring Boot 2.7.18**
+- **Spring Data JPA**
+- **Spring MVC**
+- **Thymeleaf**
 - **Maven**
 - **MySQL**
-- **Jetty (servidor embarcado)**
-- **JSP + JSTL**
-- **JDBC (SQL puro)**
-- **CSS + JavaScript**
 - **Docker & Docker Compose**
 
 ## 🐳 **Docker**

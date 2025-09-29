@@ -19,11 +19,11 @@ RUN mvn dependency:go-offline -B
 # Copiar código fonte
 COPY src ./src
 
-# Compilar a aplicação
-RUN mvn clean compile package -DskipTests
+# Compilar a aplicação Spring Boot
+RUN mvn clean package -DskipTests
 
 # Expor porta da aplicação
 EXPOSE 8080
 
-# Comando para executar a aplicação
-CMD ["mvn", "jetty:run"]
+# Comando para executar a aplicação Spring Boot
+CMD ["java", "-jar", "target/ecommerce-dashboard-1.0.0.jar"]
