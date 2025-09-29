@@ -1,12 +1,15 @@
 # Arquivos de configuração com senhas
 .env
 database.env
+*.env.local
+*.env.production
 
-# Arquivos compilados
+# Arquivos compilados Java
 target/
 *.class
 *.jar
 *.war
+*.ear
 
 # Arquivos do IDE
 .idea/
@@ -14,15 +17,42 @@ target/
 .vscode/
 *.swp
 *.swo
+*.sublime-*
+.project
+.classpath
+.settings/
 
 # Arquivos do sistema
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
 logs/
+log/
 
 # Arquivos temporários
 *.tmp
 *.temp
+*.cache
+
+# Arquivos de backup
+*.bak
+*.backup
+*~
+
+# Arquivos de configuração local
+application-local.properties
+application-dev.properties
+
+# Arquivos do Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Arquivos do Docker
+.dockerignore
+
+# Arquivos de teste
+test-output/
+test-results/

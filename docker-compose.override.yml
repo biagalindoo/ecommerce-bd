@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  ecommerce-app:
+    volumes:
+      # Montar código fonte para desenvolvimento (hot reload)
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+    environment:
+      # Configurações de desenvolvimento
+      - MAVEN_OPTS=-Xmx1024m
+      - JAVA_OPTS=-Xmx1024m
+    command: ["mvn", "jetty:run", "-Djetty.port=8080"]

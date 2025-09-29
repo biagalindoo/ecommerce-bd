@@ -4,7 +4,40 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 
 ## 🚀 Configuração
 
-### 1. Configuração do Banco de Dados
+### 🐳 **Execução com Docker (Recomendado)**
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/biagalindoo/ecommerce-bd.git
+   cd ecommerce-bd
+   ```
+
+2. **Configure o arquivo `.env`:**
+   ```bash
+   cp env.example .env
+   # Edite o arquivo .env com suas configurações de banco
+   ```
+
+3. **Execute com Docker:**
+   ```bash
+   # Linux/Mac
+   ./start.sh
+   
+   # Windows
+   start.bat
+   
+   # Ou manualmente
+   docker-compose up --build
+   ```
+
+4. **Acesse a aplicação:**
+   - Dashboard: http://localhost:8080/ecommerce-dashboard/dashboard
+   - Usuários: http://localhost:8080/ecommerce-dashboard/usuario
+   - Produtos: http://localhost:8080/ecommerce-dashboard/produto
+
+### 🔧 **Execução Manual (Sem Docker)**
+
+#### 1. Configuração do Banco de Dados
 
 1. **Copie o arquivo de exemplo:**
    ```bash
@@ -29,7 +62,7 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
    DB_MAX_CONNECTIONS=10
    ```
 
-### 2. Configuração do MySQL
+#### 2. Configuração do MySQL
 
 1. **Execute os scripts SQL na ordem:**
    ```bash
@@ -42,7 +75,7 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
    mysql -u root -p < 03-consultas.sql
    ```
 
-### 3. Execução da Aplicação
+#### 3. Execução da Aplicação
 
 1. **Compile o projeto:**
    ```bash
@@ -102,6 +135,39 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 - **JSP + JSTL**
 - **JDBC (SQL puro)**
 - **CSS + JavaScript**
+- **Docker & Docker Compose**
+
+## 🐳 **Docker**
+
+### Comandos Docker
+
+```bash
+# Construir e iniciar
+docker-compose up --build
+
+# Executar em background
+docker-compose up -d
+
+# Parar containers
+docker-compose down
+
+# Ver logs
+docker-compose logs -f
+
+# Reconstruir apenas a aplicação
+docker-compose build ecommerce-app
+
+# Executar comandos no container
+docker-compose exec ecommerce-app bash
+```
+
+### Arquivos Docker
+
+- `Dockerfile` - Configuração da imagem da aplicação
+- `docker-compose.yml` - Configuração dos serviços
+- `docker-compose.override.yml` - Configurações de desenvolvimento
+- `.dockerignore` - Arquivos ignorados no build
+- `start.sh` / `start.bat` - Scripts de inicialização
 
 ## 📝 Notas
 
