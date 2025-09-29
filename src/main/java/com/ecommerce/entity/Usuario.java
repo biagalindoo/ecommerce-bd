@@ -1,74 +1,65 @@
 package com.ecommerce.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 /**
- * Entidade Usuario para JPA
+ * Entidade Usuario para representar dados do banco
  */
-@Entity
-@Table(name = "Usuario")
 public class Usuario {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @NotBlank(message = "Primeiro nome é obrigatório")
-    @Size(max = 50, message = "Primeiro nome deve ter no máximo 50 caracteres")
-    @Column(name = "primeiro_nome", nullable = false, length = 50)
-    private String primeiroNome;
-    
-    @NotBlank(message = "Sobrenome é obrigatório")
-    @Size(max = 50, message = "Sobrenome deve ter no máximo 50 caracteres")
-    @Column(name = "sobrenome", nullable = false, length = 50)
-    private String sobrenome;
-    
-    @NotBlank(message = "Email é obrigatório")
-    @Email(message = "Email deve ter formato válido")
-    @Size(max = 100, message = "Email deve ter no máximo 100 caracteres")
-    @Column(name = "email", nullable = false, unique = true, length = 100)
+    private Integer id;
     private String email;
-    
-    @Column(name = "data_cadastro", nullable = false)
-    private LocalDateTime dataCadastro;
-    
-    // Relacionamentos
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Telefone> telefones;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Endereco> enderecos;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Pedido> pedidos;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Carrinho> carrinhos;
+    private String senhaHash;
+    private String cpf;
+    private String primeiroNome;
+    private String sobrenome;
+    private LocalDate dataNascimento;
     
     // Construtores
-    public Usuario() {
-        this.dataCadastro = LocalDateTime.now();
-    }
+    public Usuario() {}
     
-    public Usuario(String primeiroNome, String sobrenome, String email) {
-        this();
+    public Usuario(Integer id, String email, String senhaHash, String cpf, 
+                   String primeiroNome, String sobrenome, LocalDate dataNascimento) {
+        this.id = id;
+        this.email = email;
+        this.senhaHash = senhaHash;
+        this.cpf = cpf;
         this.primeiroNome = primeiroNome;
         this.sobrenome = sobrenome;
-        this.email = email;
+        this.dataNascimento = dataNascimento;
     }
     
     // Getters e Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+    
+    public void setSenhaHash(String senhaHash) {
+        this.senhaHash = senhaHash;
+    }
+    
+    public String getCpf() {
+        return cpf;
+    }
+    
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
     
     public String getPrimeiroNome() {
@@ -87,52 +78,12 @@ public class Usuario {
         this.sobrenome = sobrenome;
     }
     
-    public String getEmail() {
-        return email;
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
-    }
-    
-    public void setDataCadastro(LocalDateTime dataCadastro) {
-        this.dataCadastro = dataCadastro;
-    }
-    
-    public List<Telefone> getTelefones() {
-        return telefones;
-    }
-    
-    public void setTelefones(List<Telefone> telefones) {
-        this.telefones = telefones;
-    }
-    
-    public List<Endereco> getEnderecos() {
-        return enderecos;
-    }
-    
-    public void setEnderecos(List<Endereco> enderecos) {
-        this.enderecos = enderecos;
-    }
-    
-    public List<Pedido> getPedidos() {
-        return pedidos;
-    }
-    
-    public void setPedidos(List<Pedido> pedidos) {
-        this.pedidos = pedidos;
-    }
-    
-    public List<Carrinho> getCarrinhos() {
-        return carrinhos;
-    }
-    
-    public void setCarrinhos(List<Carrinho> carrinhos) {
-        this.carrinhos = carrinhos;
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
     
     // Métodos auxiliares
@@ -144,10 +95,11 @@ public class Usuario {
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
+                ", email='" + email + '\'' +
+                ", cpf='" + cpf + '\'' +
                 ", primeiroNome='" + primeiroNome + '\'' +
                 ", sobrenome='" + sobrenome + '\'' +
-                ", email='" + email + '\'' +
-                ", dataCadastro=" + dataCadastro +
+                ", dataNascimento=" + dataNascimento +
                 '}';
     }
 }

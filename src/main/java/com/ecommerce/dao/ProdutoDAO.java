@@ -1,214 +1,273 @@
 package com.ecommerce.dao;
 
 import com.ecommerce.database.DatabaseConnection;
-import com.ecommerce.model.Produto;
+import com.ecommerce.entity.Produto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * DAO para operações CRUD na tabela Produto
- * Usa SQL puro sem ORMs ou frameworks de abstração
+ * DAO para operações de Produto usando SQL puro
  */
+@Repository
 public class ProdutoDAO {
     
-    private Connection connection;
-    
-    public ProdutoDAO() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
-    }
+    @Autowired
+    private DatabaseConnection databaseConnection;
     
     /**
-     * Inserir novo produto
-     */
-    public boolean inserir(Produto produto) {
-        String sql = "INSERT INTO Produto (nome, descricao, preco, quantidade_estoque, armazem_id) VALUES (?, ?, ?, ?, ?)";
-        
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, produto.getNome());
-            stmt.setString(2, produto.getDescricao());
-            stmt.setDouble(3, produto.getPreco());
-            stmt.setInt(4, produto.getQuantidadeEstoque());
-            stmt.setInt(5, produto.getArmazemId());
-            
-            int rowsAffected = stmt.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    produto.setId(generatedKeys.getInt(1));
-                }
-                return true;
-            }
-        } catch (SQLException e) {
-            System.err.println("Erro ao inserir produto: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    /**
-     * Buscar produto por ID
-     */
-    public Produto buscarPorId(int id) {
-        String sql = "SELECT p.*, a.nome as nome_armazem FROM Produto p LEFT JOIN Armazem a ON p.armazem_id = a.id WHERE p.id = ?";
-        Produto produto = null;
-        
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                produto = new Produto();
-                produto.setId(rs.getInt("id"));
-                produto.setNome(rs.getString("nome"));
-                produto.setDescricao(rs.getString("descricao"));
-                produto.setPreco(rs.getDouble("preco"));
-                produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
-                produto.setArmazemId(rs.getInt("armazem_id"));
-                produto.setNomeArmazem(rs.getString("nome_armazem"));
-            }
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar produto por ID: " + e.getMessage());
-        }
-        return produto;
-    }
-    
-    /**
-     * Listar todos os produtos
+     * Lista todos os produtos
      */
     public List<Produto> listarTodos() {
-        String sql = "SELECT p.*, a.nome as nome_armazem FROM Produto p LEFT JOIN Armazem a ON p.armazem_id = a.id ORDER BY p.nome";
         List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             
             while (rs.next()) {
-                Produto produto = new Produto();
-                produto.setId(rs.getInt("id"));
-                produto.setNome(rs.getString("nome"));
-                produto.setDescricao(rs.getString("descricao"));
-                produto.setPreco(rs.getDouble("preco"));
-                produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
-                produto.setArmazemId(rs.getInt("armazem_id"));
-                produto.setNomeArmazem(rs.getString("nome_armazem"));
-                produtos.add(produto);
+                produtos.add(mapearResultado(rs));
             }
         } catch (SQLException e) {
             System.err.println("Erro ao listar produtos: " + e.getMessage());
         }
+        
         return produtos;
     }
     
     /**
-     * Atualizar produto
+     * Busca produto por ID
      */
-    public boolean atualizar(Produto produto) {
-        String sql = "UPDATE Produto SET nome = ?, descricao = ?, preco = ?, quantidade_estoque = ?, armazem_id = ? WHERE id = ?";
+    public Optional<Produto> buscarPorId(Integer id) {
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE id = ?";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, produto.getNome());
-            stmt.setString(2, produto.getDescricao());
-            stmt.setDouble(3, produto.getPreco());
-            stmt.setInt(4, produto.getQuantidadeEstoque());
-            stmt.setInt(5, produto.getArmazemId());
-            stmt.setInt(6, produto.getId());
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Erro ao atualizar produto: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    /**
-     * Deletar produto
-     */
-    public boolean deletar(int id) {
-        String sql = "DELETE FROM Produto WHERE id = ?";
-        
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapearResultado(rs));
+                }
+            }
         } catch (SQLException e) {
-            System.err.println("Erro ao deletar produto: " + e.getMessage());
+            System.err.println("Erro ao buscar produto por ID: " + e.getMessage());
         }
-        return false;
+        
+        return Optional.empty();
     }
     
     /**
-     * Buscar produtos por nome
+     * Busca produtos por nome
      */
     public List<Produto> buscarPorNome(String nome) {
-        String sql = "SELECT p.*, a.nome as nome_armazem FROM Produto p LEFT JOIN Armazem a ON p.armazem_id = a.id WHERE p.nome LIKE ? ORDER BY p.nome";
         List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE nome LIKE ?";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            String searchTerm = "%" + nome + "%";
-            stmt.setString(1, searchTerm);
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            while (rs.next()) {
-                Produto produto = new Produto();
-                produto.setId(rs.getInt("id"));
-                produto.setNome(rs.getString("nome"));
-                produto.setDescricao(rs.getString("descricao"));
-                produto.setPreco(rs.getDouble("preco"));
-                produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
-                produto.setArmazemId(rs.getInt("armazem_id"));
-                produto.setNomeArmazem(rs.getString("nome_armazem"));
-                produtos.add(produto);
+            stmt.setString(1, "%" + nome + "%");
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    produtos.add(mapearResultado(rs));
+                }
             }
         } catch (SQLException e) {
             System.err.println("Erro ao buscar produtos por nome: " + e.getMessage());
         }
+        
         return produtos;
     }
     
     /**
-     * Listar armazéns disponíveis
+     * Salva um novo produto
      */
-    public List<String> listarArmazens() {
-        String sql = "SELECT id, nome FROM Armazem ORDER BY nome";
-        List<String> armazens = new ArrayList<>();
+    public Produto salvar(Produto produto) {
+        String sql = "INSERT INTO Produto (nome, descricao, preco, quantidade_estoque, armazem_id) VALUES (?, ?, ?, ?, ?)";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            while (rs.next()) {
-                armazens.add(rs.getInt("id") + " - " + rs.getString("nome"));
+            stmt.setString(1, produto.getNome());
+            stmt.setString(2, produto.getDescricao());
+            stmt.setBigDecimal(3, produto.getPreco());
+            stmt.setInt(4, produto.getQuantidadeEstoque());
+            if (produto.getArmazemId() != null) {
+                stmt.setInt(5, produto.getArmazemId());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
+            
+            int linhasAfetadas = stmt.executeUpdate();
+            
+            if (linhasAfetadas > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        produto.setId(rs.getInt(1));
+                    }
+                }
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao listar armazéns: " + e.getMessage());
+            System.err.println("Erro ao salvar produto: " + e.getMessage());
+            throw new RuntimeException("Erro ao salvar produto", e);
         }
-        return armazens;
+        
+        return produto;
     }
     
     /**
-     * Buscar produtos com estoque baixo
+     * Atualiza um produto
      */
-    public List<Produto> buscarEstoqueBaixo() {
-        String sql = "SELECT p.*, a.nome as nome_armazem FROM Produto p LEFT JOIN Armazem a ON p.armazem_id = a.id WHERE p.quantidade_estoque < 10 ORDER BY p.quantidade_estoque";
-        List<Produto> produtos = new ArrayList<>();
+    public Produto atualizar(Produto produto) {
+        String sql = "UPDATE Produto SET nome = ?, descricao = ?, preco = ?, quantidade_estoque = ?, armazem_id = ? WHERE id = ?";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            while (rs.next()) {
-                Produto produto = new Produto();
-                produto.setId(rs.getInt("id"));
-                produto.setNome(rs.getString("nome"));
-                produto.setDescricao(rs.getString("descricao"));
-                produto.setPreco(rs.getDouble("preco"));
-                produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
-                produto.setArmazemId(rs.getInt("armazem_id"));
-                produto.setNomeArmazem(rs.getString("nome_armazem"));
-                produtos.add(produto);
+            stmt.setString(1, produto.getNome());
+            stmt.setString(2, produto.getDescricao());
+            stmt.setBigDecimal(3, produto.getPreco());
+            stmt.setInt(4, produto.getQuantidadeEstoque());
+            if (produto.getArmazemId() != null) {
+                stmt.setInt(5, produto.getArmazemId());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(6, produto.getId());
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar produto: " + e.getMessage());
+            throw new RuntimeException("Erro ao atualizar produto", e);
+        }
+        
+        return produto;
+    }
+    
+    /**
+     * Exclui um produto
+     */
+    public void excluir(Integer id) {
+        String sql = "DELETE FROM Produto WHERE id = ?";
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao excluir produto: " + e.getMessage());
+            throw new RuntimeException("Erro ao excluir produto", e);
+        }
+    }
+    
+    /**
+     * Busca produtos com estoque baixo
+     */
+    public List<Produto> buscarProdutosComEstoqueBaixo(int limite) {
+        List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE quantidade_estoque < ?";
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, limite);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    produtos.add(mapearResultado(rs));
+                }
             }
         } catch (SQLException e) {
             System.err.println("Erro ao buscar produtos com estoque baixo: " + e.getMessage());
         }
+        
         return produtos;
+    }
+    
+    /**
+     * Busca produtos esgotados
+     */
+    public List<Produto> buscarProdutosEsgotados() {
+        List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE quantidade_estoque = 0";
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                produtos.add(mapearResultado(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar produtos esgotados: " + e.getMessage());
+        }
+        
+        return produtos;
+    }
+    
+    /**
+     * Calcula valor total do estoque
+     */
+    public BigDecimal calcularValorTotalEstoque() {
+        String sql = "SELECT SUM(preco * quantidade_estoque) FROM Produto";
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                BigDecimal valor = rs.getBigDecimal(1);
+                return valor != null ? valor : BigDecimal.ZERO;
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao calcular valor total do estoque: " + e.getMessage());
+        }
+        
+        return BigDecimal.ZERO;
+    }
+    
+    /**
+     * Conta total de produtos
+     */
+    public long contarTotal() {
+        String sql = "SELECT COUNT(*) FROM Produto";
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao contar produtos: " + e.getMessage());
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Mapeia resultado do ResultSet para objeto Produto
+     */
+    private Produto mapearResultado(ResultSet rs) throws SQLException {
+        Produto produto = new Produto();
+        produto.setId(rs.getInt("id"));
+        produto.setNome(rs.getString("nome"));
+        produto.setDescricao(rs.getString("descricao"));
+        produto.setPreco(rs.getBigDecimal("preco"));
+        produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
+        produto.setArmazemId(rs.getInt("armazem_id"));
+        
+        return produto;
     }
 }

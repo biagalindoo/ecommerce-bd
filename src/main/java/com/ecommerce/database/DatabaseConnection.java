@@ -1,68 +1,49 @@
 package com.ecommerce.database;
 
-import com.ecommerce.config.EnvironmentConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Classe para gerenciar conexão com o banco de dados MySQL
- * Usa SQL puro sem ORMs ou frameworks de abstração
- * Configurações carregadas do arquivo .env
+ * Classe para gerenciar conexões com o banco de dados usando JDBC puro
  */
+@Component
 public class DatabaseConnection {
     
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    @Value("${spring.datasource.url}")
+    private String url;
     
-    // Configurações carregadas do arquivo .env
-    private static final String URL = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
-            EnvironmentConfig.getDbHost(),
-            EnvironmentConfig.getDbPort(),
-            EnvironmentConfig.getDbName());
-    private static final String USERNAME = EnvironmentConfig.getDbUser();
-    private static final String PASSWORD = EnvironmentConfig.getDbPassword();
+    @Value("${spring.datasource.username}")
+    private String username;
     
-    private static DatabaseConnection instance;
-    private Connection connection;
+    @Value("${spring.datasource.password}")
+    private String password;
     
-    private DatabaseConnection() {
+    /**
+     * Obtém uma conexão com o banco de dados
+     */
+    public Connection getConnection() throws SQLException {
         try {
-            Class.forName(DRIVER);
-            this.connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("Erro ao conectar com o banco de dados: " + e.getMessage());
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(url, username, password);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Driver MySQL não encontrado", e);
         }
     }
     
-    public static DatabaseConnection getInstance() {
-        if (instance == null) {
-            synchronized (DatabaseConnection.class) {
-                if (instance == null) {
-                    instance = new DatabaseConnection();
-                }
-            }
-        }
-        return instance;
-    }
-    
-    public Connection getConnection() {
-        try {
-            if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            }
-        } catch (SQLException e) {
-            System.err.println("Erro ao obter conexão: " + e.getMessage());
-        }
-        return connection;
-    }
-    
-    public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
+    /**
+     * Fecha uma conexão
+     */
+    public void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
                 connection.close();
+            } catch (SQLException e) {
+                System.err.println("Erro ao fechar conexão: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao fechar conexão: " + e.getMessage());
         }
     }
 }

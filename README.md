@@ -89,8 +89,8 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 
 3. **Acesse a aplicação:**
    - Dashboard: http://localhost:8080/ecommerce-dashboard/dashboard
-   - Usuários: http://localhost:8080/ecommerce-dashboard/usuario
-   - Produtos: http://localhost:8080/ecommerce-dashboard/produto
+   - Usuários: http://localhost:8080/ecommerce-dashboard/usuarios
+   - Produtos: http://localhost:8080/ecommerce-dashboard/produtos
 
 ## 📁 Estrutura do Projeto
 
@@ -103,6 +103,10 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 │   └── EcommerceDashboardApplication.java # Classe principal Spring Boot
 ├── src/main/resources/
 │   ├── templates/       # Templates Thymeleaf
+│   │   ├── layout/      # Layout base
+│   │   ├── dashboard/   # Páginas do dashboard
+│   │   ├── usuarios/    # Páginas de usuários
+│   │   └── produtos/    # Páginas de produtos
 │   └── application.properties # Configurações Spring Boot
 ├── 01-create-tables.sql # Script de criação das tabelas
 ├── 02-populate-tables.sql # Script de população das tabelas
@@ -122,9 +126,10 @@ Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem O
 - ✅ **Busca avançada** por nome, cidade, estado
 - ✅ **Filtro de estoque baixo** para produtos
 - ✅ **Validação de formulários** com Bean Validation
-- ✅ **Interface responsiva** com Bootstrap 5
+- ✅ **Interface moderna** com Bootstrap 5 e CSS customizado
 - ✅ **Templates Thymeleaf** para renderização
 - ✅ **Spring Data JPA** para acesso a dados
+- ✅ **Health checks** com Spring Actuator
 - ✅ **Configuração via arquivo .env**
 
 ## 🛠️ Tecnologias

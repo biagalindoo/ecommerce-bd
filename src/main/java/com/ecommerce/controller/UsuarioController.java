@@ -5,19 +5,15 @@ import com.ecommerce.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller para operações de Usuario
  */
 @Controller
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class UsuarioController {
     
     @Autowired
@@ -28,129 +24,112 @@ public class UsuarioController {
      */
     @GetMapping
     public String listar(@RequestParam(value = "nome", required = false) String nome,
-                        @RequestParam(value = "cidade", required = false) String cidade,
-                        @RequestParam(value = "estado", required = false) String estado,
                         Model model) {
         
         List<Usuario> usuarios;
         
         if (nome != null && !nome.trim().isEmpty()) {
             usuarios = usuarioService.buscarPorNome(nome);
-        } else if (cidade != null && !cidade.trim().isEmpty()) {
-            usuarios = usuarioService.buscarPorCidade(cidade);
-        } else if (estado != null && !estado.trim().isEmpty()) {
-            usuarios = usuarioService.buscarPorEstado(estado);
         } else {
             usuarios = usuarioService.listarTodos();
         }
         
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("totalUsuarios", usuarios.size());
-        return "usuario/list";
+        return "usuarios/list";
     }
     
     /**
-     * Exibe formulário para novo usuário
+     * Formulário para novo usuário
      */
     @GetMapping("/novo")
     public String novoUsuario(Model model) {
         model.addAttribute("usuario", new Usuario());
-        return "usuario/form";
+        return "usuarios/form";
     }
     
     /**
-     * Salva novo usuário
+     * Salvar novo usuário
      */
-    @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute("usuario") Usuario usuario,
-                        BindingResult result,
-                        RedirectAttributes redirectAttributes) {
-        
-        if (result.hasErrors()) {
-            return "usuario/form";
-        }
-        
-        // Verifica se email já existe
-        if (usuarioService.emailExiste(usuario.getEmail())) {
-            result.rejectValue("email", "error.usuario", "Email já cadastrado");
-            return "usuario/form";
-        }
-        
+    @PostMapping("/novo")
+    public String salvarUsuario(@RequestParam String primeiroNome,
+                                @RequestParam String sobrenome,
+                                @RequestParam String email,
+                                @RequestParam String cpf,
+                                @RequestParam String dataNascimento,
+                                @RequestParam String senhaHash) {
         try {
+            Usuario usuario = new Usuario();
+            usuario.setPrimeiroNome(primeiroNome);
+            usuario.setSobrenome(sobrenome);
+            usuario.setEmail(email);
+            usuario.setCpf(cpf);
+            usuario.setDataNascimento(java.time.LocalDate.parse(dataNascimento));
+            usuario.setSenhaHash(senhaHash);
+            
             usuarioService.salvar(usuario);
-            redirectAttributes.addFlashAttribute("success", "Usuário salvo com sucesso!");
-            return "redirect:/usuario";
+            return "redirect:/usuarios";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erro ao salvar usuário: " + e.getMessage());
-            return "usuario/form";
+            System.err.println("Erro ao salvar usuário: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/usuarios";
         }
     }
     
     /**
-     * Exibe formulário para editar usuário
+     * Formulário para editar usuário
      */
     @GetMapping("/editar/{id}")
-    public String editarUsuario(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<Usuario> usuarioOpt = usuarioService.buscarPorId(id);
-        
-        if (usuarioOpt.isPresent()) {
-            model.addAttribute("usuario", usuarioOpt.get());
-            return "usuario/edit";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Usuário não encontrado");
-            return "redirect:/usuario";
+    public String editarUsuario(@PathVariable Integer id, Model model) {
+        Usuario usuario = usuarioService.buscarPorId(id).orElse(null);
+        if (usuario == null) {
+            return "redirect:/usuarios";
         }
+        model.addAttribute("usuario", usuario);
+        return "usuarios/form";
     }
     
     /**
-     * Atualiza usuário
+     * Atualizar usuário
      */
-    @PostMapping("/atualizar")
-    public String atualizar(@Valid @ModelAttribute("usuario") Usuario usuario,
-                           BindingResult result,
-                           RedirectAttributes redirectAttributes) {
-        
-        if (result.hasErrors()) {
-            return "usuario/edit";
-        }
-        
+    @PostMapping("/editar")
+    public String atualizarUsuario(@RequestParam Integer id,
+                                   @RequestParam String primeiroNome,
+                                   @RequestParam String sobrenome,
+                                   @RequestParam String email,
+                                   @RequestParam String cpf,
+                                   @RequestParam String dataNascimento,
+                                   @RequestParam String senhaHash) {
         try {
+            Usuario usuario = new Usuario();
+            usuario.setId(id);
+            usuario.setPrimeiroNome(primeiroNome);
+            usuario.setSobrenome(sobrenome);
+            usuario.setEmail(email);
+            usuario.setCpf(cpf);
+            usuario.setDataNascimento(java.time.LocalDate.parse(dataNascimento));
+            usuario.setSenhaHash(senhaHash);
+            
             usuarioService.atualizar(usuario);
-            redirectAttributes.addFlashAttribute("success", "Usuário atualizado com sucesso!");
-            return "redirect:/usuario";
+            return "redirect:/usuarios";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erro ao atualizar usuário: " + e.getMessage());
-            return "usuario/edit";
+            System.err.println("Erro ao atualizar usuário: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/usuarios";
         }
     }
     
     /**
-     * Exclui usuário
+     * Excluir usuário
      */
     @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String excluirUsuario(@PathVariable Integer id) {
         try {
             usuarioService.excluir(id);
-            redirectAttributes.addFlashAttribute("success", "Usuário excluído com sucesso!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erro ao excluir usuário: " + e.getMessage());
+            System.err.println("Erro ao excluir usuário: " + e.getMessage());
+            e.printStackTrace();
         }
-        return "redirect:/usuario";
-    }
-    
-    /**
-     * Exibe detalhes do usuário
-     */
-    @GetMapping("/detalhes/{id}")
-    public String detalhes(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<Usuario> usuarioOpt = usuarioService.buscarPorId(id);
-        
-        if (usuarioOpt.isPresent()) {
-            model.addAttribute("usuario", usuarioOpt.get());
-            return "usuario/detalhes";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Usuário não encontrado");
-            return "redirect:/usuario";
-        }
+        return "redirect:/usuarios";
     }
 }
