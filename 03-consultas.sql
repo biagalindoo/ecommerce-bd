@@ -80,72 +80,7 @@ HAVING total_pedidos > 0
 ORDER BY receita_total DESC;
 
 -- ===============================================
--- CONSULTA 4: AVANÇADA - Ranking de produtos mais vendidos com análise de margem
--- ===============================================
--- Nível: Expert
--- Descrição: Ranking completo dos produtos mais vendidos com análise
---           de margem de lucro, estoque e performance por armazém
--- Dificuldade: Muito Alta
-
-WITH vendas_produto AS (
-    SELECT 
-        p.id AS produto_id,
-        p.nome,
-        p.preco,
-        p.quantidade_estoque,
-        a.nome AS armazem,
-        COUNT(ip.id) AS total_vendas,
-        SUM(ip.quantidade) AS quantidade_total_vendida,
-        SUM(ip.subtotal) AS receita_total,
-        AVG(ip.preco_unitario) AS preco_medio_venda
-    FROM Produto p
-    INNER JOIN Armazem a ON p.armazem_id = a.id
-    LEFT JOIN ItemPedido ip ON p.id = ip.produto_id
-    LEFT JOIN Pedido ped ON ip.pedido_id = ped.id
-    WHERE ped.status_pedido IN ('pago', 'enviado') OR ped.status_pedido IS NULL
-    GROUP BY p.id, p.nome, p.preco, p.quantidade_estoque, a.nome
-),
-fornecedor_custo AS (
-    SELECT 
-        fp.produto_id,
-        AVG(fp.custo_unitario_compra) AS custo_medio,
-        MIN(fp.custo_unitario_compra) AS custo_minimo,
-        MAX(fp.custo_unitario_compra) AS custo_maximo
-    FROM FornecedorProduto fp
-    GROUP BY fp.produto_id
-)
-SELECT 
-    vp.produto_id,
-    vp.nome AS produto,
-    vp.armazem,
-    vp.preco AS preco_atual,
-    vp.quantidade_estoque,
-    vp.total_vendas,
-    vp.quantidade_total_vendida,
-    vp.receita_total,
-    vp.preco_medio_venda,
-    fc.custo_medio,
-    fc.custo_minimo,
-    fc.custo_maximo,
-    ROUND(vp.preco - fc.custo_medio, 2) AS margem_absoluta,
-    ROUND((vp.preco - fc.custo_medio) / fc.custo_medio * 100, 2) AS margem_percentual,
-    CASE 
-        WHEN vp.quantidade_estoque = 0 THEN 'ESGOTADO'
-        WHEN vp.quantidade_estoque < 10 THEN 'BAIXO ESTOQUE'
-        WHEN vp.quantidade_estoque < 25 THEN 'ESTOQUE MÉDIO'
-        ELSE 'ESTOQUE ALTO'
-    END AS status_estoque,
-    ROUND(vp.receita_total / NULLIF(vp.total_vendas, 0), 2) AS ticket_medio
-FROM vendas_produto vp
-LEFT JOIN fornecedor_custo fc ON vp.produto_id = fc.produto_id
-WHERE vp.total_vendas > 0 OR vp.quantidade_estoque > 0
-ORDER BY 
-    vp.receita_total DESC,
-    vp.quantidade_total_vendida DESC,
-    margem_percentual DESC;
-
--- ===============================================
--- CONSULTA BÔNUS: Análise de performance de usuários
+-- CONSULTA 4: Análise de performance de usuários
 -- ===============================================
 -- Nível: Intermediário-Avançado
 -- Descrição: Análise de comportamento dos usuários baseada em pedidos e carrinho
@@ -172,3 +107,4 @@ LEFT JOIN Carrinho c ON u.id = c.usuario_id
 GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, e.cidade, e.estado
 HAVING total_pedidos > 0
 ORDER BY valor_total_gasto DESC, total_pedidos DESC;
+
