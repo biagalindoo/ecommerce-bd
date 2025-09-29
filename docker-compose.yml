@@ -6,24 +6,12 @@ services:
     container_name: ecommerce-dashboard
     ports:
       - "8080:8080"
-    environment:
-      - DB_HOST=${DB_HOST:-localhost}
-      - DB_PORT=${DB_PORT:-3306}
-      - DB_NAME=${DB_NAME:-ecommerce_bd}
-      - DB_USER=${DB_USER:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-biafera123}
-      - SPRING_PROFILES_ACTIVE=docker
+    env_file:
+      - .env
     volumes:
       - ./.env:/app/.env:ro
     networks:
       - ecommerce-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/ecommerce-dashboard/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
 networks:
   ecommerce-network:
