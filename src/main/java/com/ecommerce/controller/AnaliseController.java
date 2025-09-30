@@ -21,12 +21,6 @@ public class AnaliseController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/categoria")
-    public String analisePorCategoria(Model model) {
-        List<AnaliseCategoria> analises = produtoService.analisarPorCategoria();
-        model.addAttribute("analises", analises);
-        return "analise/categoria";
-    }
     
     @GetMapping("/usuarios")
     public String listarUsuariosCompletos(Model model) {

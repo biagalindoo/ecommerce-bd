@@ -13,20 +13,18 @@ public class Produto {
     private BigDecimal preco;
     private Integer quantidadeEstoque;
     private Integer armazemId;
-    private String categoria;
     
     // Construtores
     public Produto() {}
     
     public Produto(Integer id, String nome, String descricao, BigDecimal preco, 
-                   Integer quantidadeEstoque, Integer armazemId, String categoria) {
+                   Integer quantidadeEstoque, Integer armazemId) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
         this.armazemId = armazemId;
-        this.categoria = categoria;
     }
     
     // Getters e Setters
@@ -78,14 +76,6 @@ public class Produto {
         this.armazemId = armazemId;
     }
     
-    public String getCategoria() {
-        return categoria;
-    }
-    
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-    
     @Override
     public String toString() {
         return "Produto{" +
@@ -95,7 +85,6 @@ public class Produto {
                 ", preco=" + preco +
                 ", quantidadeEstoque=" + quantidadeEstoque +
                 ", armazemId=" + armazemId +
-                ", categoria='" + categoria + '\'' +
                 '}';
     }
 }
