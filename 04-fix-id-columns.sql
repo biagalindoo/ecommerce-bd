@@ -1,5 +1,4 @@
--- Script para corrigir tipos de dados das colunas ID
--- Converte INT para BIGINT para compatibilidade com JPA
+
 
 USE ecommerce_bd;
 

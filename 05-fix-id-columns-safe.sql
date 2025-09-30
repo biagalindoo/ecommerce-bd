@@ -1,5 +1,3 @@
--- script seguro para corrigir tipos de dados das colunas ID
--- desabilita verificações de FK temporariamente
 
 USE ecommerce_bd;
 
