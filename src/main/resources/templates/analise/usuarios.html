@@ -91,10 +91,10 @@
                                             <span th:text="${usuario.email}">email@exemplo.com</span>
                                         </td>
                                         <td>
-                                            <span th:text="${usuario.cpf}">000.000.000-00</span>
+                                            <span th:text="${#strings.substring(usuario.cpf, 0, 3) + '.' + #strings.substring(usuario.cpf, 3, 6) + '.' + #strings.substring(usuario.cpf, 6, 9) + '-' + #strings.substring(usuario.cpf, 9, 11)}">000.000.000-00</span>
                                         </td>
                                         <td>
-                                            <span th:text="${usuario.dataNascimento}">1990-01-01</span>
+                                            <span th:text="${#temporals.format(usuario.dataNascimento, 'dd/MM/yyyy')}">01/01/1990</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-info" th:text="${usuario.idade} + ' anos'">25 anos</span>

@@ -27,7 +27,7 @@ public class ProdutoDAO {
      */
     public List<Produto> listarTodos() {
         List<Produto> produtos = new ArrayList<>();
-        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto";
+        String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto ORDER BY id ASC";
         
         try (Connection conn = databaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -114,7 +114,9 @@ public class ProdutoDAO {
             if (linhasAfetadas > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        produto.setId(rs.getInt(1));
+                        int novoId = rs.getInt(1);
+                        produto.setId(novoId);
+                        System.out.println("Produto salvo com ID: " + novoId);
                     }
                 }
             }

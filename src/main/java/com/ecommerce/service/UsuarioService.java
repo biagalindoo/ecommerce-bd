@@ -3,7 +3,6 @@ package com.ecommerce.service;
 import com.ecommerce.dao.UsuarioDAO;
 import com.ecommerce.entity.Usuario;
 import com.ecommerce.entity.UsuarioCompleto;
-import com.ecommerce.entity.AnaliseIdade;
 import com.ecommerce.entity.UsuarioProduto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,12 +98,6 @@ public class UsuarioService {
         return usuarioDAO.listarUsuariosCompletos();
     }
     
-    /**
-     * Análise de usuários por faixa etária
-     */
-    public List<AnaliseIdade> analisarPorIdade() {
-        return usuarioDAO.analisarPorIdade();
-    }
     
     /**
      * Lista usuários com análise de produtos gerenciados (JOIN)

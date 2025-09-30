@@ -1,9 +1,6 @@
 
--- CONSULTAS SQL - 
-
--- CONSULTA 1: SIMPLES - Listar todos os usuários com informações básicas
--- Nível: Básico
--- Descrição: Lista todos os usuários com nome completo e email
+-- CONSULTA 1 listar todos os usuários com informações básicas
+-- descrição: lista todos os usuários com nome completo e email
 
 SELECT 
     id,
@@ -13,12 +10,11 @@ SELECT
     data_nascimento,
     TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) AS idade
 FROM Usuario
-ORDER BY primeiro_nome, sobrenome;
+ORDER BY id ASC;
 
 
--- CONSULTA 2: SIMPLES - Análise de produtos por faixa de preço
--- Nível: Básico
--- Descrição: Conta produtos por faixas de preço
+-- CONSULTA 2:análise de produtos por faixa de preço
+-- descrição: conta produtos por faixas de preço
 
 SELECT 
     CASE 
@@ -36,9 +32,8 @@ GROUP BY faixa_preco
 ORDER BY MIN(preco);
 
 
--- CONSULTA 3: COM JOIN - Produtos e usuários por armazém (simulado) como não implementamos o armazem, a consulta seria meio que produtos por usuario, quando implementarmos o armazem, a consulta será alterada para produtos por armazem pelo armazem_id
--- Nível: Intermediário
--- Descrição: Relaciona produtos com "usuários responsáveis" baseado no armazem_id
+-- CONSULTA 3: COM JOIN - produtos e usuários por armazém (simulado) como não implementamos o armazem, a consulta seria meio que produtos por usuario, quando implementarmos o armazem, a consulta será alterada para produtos por armazem pelo armazem_id
+-- descrição: relaciona produtos com "usuários responsáveis" baseado no armazem_id
 
 
 SELECT 
@@ -54,9 +49,8 @@ WHERE p.quantidade_estoque > 0
 ORDER BY p.armazem_id, p.nome;
 
 
--- CONSULTA 4: AVANÇADA - Análise de usuários por faixa etária com produtos
--- Nível: Intermediário
--- Descrição: Analisa usuários agrupados por faixa etária e relaciona com produtos que gerenciam
+-- CONSULTA 4: análise de usuários por faixa etária com produtos
+-- descrição: analisa usuários agrupados por faixa etária e relaciona com produtos que gerenciam
 SELECT 
     u.id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
