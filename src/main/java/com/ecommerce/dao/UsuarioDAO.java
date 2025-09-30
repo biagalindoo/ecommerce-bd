@@ -2,6 +2,9 @@ package com.ecommerce.dao;
 
 import com.ecommerce.database.DatabaseConnection;
 import com.ecommerce.entity.Usuario;
+import com.ecommerce.entity.UsuarioCompleto;
+import com.ecommerce.entity.AnaliseIdade;
+import com.ecommerce.entity.UsuarioProduto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -207,6 +210,139 @@ public class UsuarioDAO {
         }
         
         return false;
+    }
+    
+    /**
+     * Lista todos os usuários com informações completas
+     */
+    public List<UsuarioCompleto> listarUsuariosCompletos() {
+        String sql = "SELECT id, CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo, " +
+                    "email, cpf, data_nascimento, " +
+                    "TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) AS idade " +
+                    "FROM Usuario " +
+                    "ORDER BY primeiro_nome, sobrenome";
+        
+        List<UsuarioCompleto> usuarios = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                UsuarioCompleto usuario = new UsuarioCompleto();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNomeCompleto(rs.getString("nome_completo"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setCpf(rs.getString("cpf"));
+                
+                Date dataNascimento = rs.getDate("data_nascimento");
+                if (dataNascimento != null) {
+                    usuario.setDataNascimento(dataNascimento.toLocalDate());
+                }
+                
+                usuario.setIdade(rs.getInt("idade"));
+                
+                usuarios.add(usuario);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return usuarios;
+    }
+    
+    /**
+     * Análise de usuários por faixa etária
+     */
+    public List<AnaliseIdade> analisarPorIdade() {
+        String sql = "SELECT " +
+                    "CASE " +
+                    "WHEN TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) < 18 THEN 'Menores de 18' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) BETWEEN 18 AND 25 THEN '18-25 anos' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) BETWEEN 26 AND 35 THEN '26-35 anos' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()) BETWEEN 36 AND 50 THEN '36-50 anos' " +
+                    "ELSE 'Acima de 50 anos' " +
+                    "END AS faixa_etaria, " +
+                    "COUNT(*) AS total_usuarios, " +
+                    "ROUND(AVG(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE())), 1) AS idade_media, " +
+                    "MIN(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE())) AS idade_minima, " +
+                    "MAX(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE())) AS idade_maxima " +
+                    "FROM Usuario " +
+                    "WHERE data_nascimento IS NOT NULL " +
+                    "GROUP BY faixa_etaria " +
+                    "ORDER BY MIN(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()))";
+        
+        List<AnaliseIdade> analises = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                AnaliseIdade analise = new AnaliseIdade();
+                analise.setFaixaEtaria(rs.getString("faixa_etaria"));
+                analise.setTotalUsuarios(rs.getInt("total_usuarios"));
+                analise.setIdadeMedia(rs.getDouble("idade_media"));
+                analise.setIdadeMinima(rs.getInt("idade_minima"));
+                analise.setIdadeMaxima(rs.getInt("idade_maxima"));
+                
+                analises.add(analise);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return analises;
+    }
+    
+    /**
+     * Lista usuários com análise de produtos gerenciados (JOIN)
+     */
+    public List<UsuarioProduto> listarUsuariosComProdutos() {
+        String sql = "SELECT u.id, CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo, " +
+                    "u.email, " +
+                    "CASE " +
+                    "WHEN TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) < 18 THEN 'Menores de 18' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) BETWEEN 18 AND 25 THEN '18-25 anos' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) BETWEEN 26 AND 35 THEN '26-35 anos' " +
+                    "WHEN TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) BETWEEN 36 AND 50 THEN '36-50 anos' " +
+                    "ELSE 'Acima de 50 anos' " +
+                    "END AS faixa_etaria, " +
+                    "TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) AS idade, " +
+                    "COUNT(p.id) AS produtos_gerenciados, " +
+                    "COALESCE(SUM(p.preco * p.quantidade_estoque), 0) AS valor_total_produtos " +
+                    "FROM Usuario u " +
+                    "LEFT JOIN Produto p ON u.id = p.armazem_id " +
+                    "WHERE u.data_nascimento IS NOT NULL " +
+                    "GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.data_nascimento " +
+                    "ORDER BY idade, nome_completo";
+        
+        List<UsuarioProduto> usuarios = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                UsuarioProduto usuario = new UsuarioProduto();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNomeCompleto(rs.getString("nome_completo"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setFaixaEtaria(rs.getString("faixa_etaria"));
+                usuario.setIdade(rs.getInt("idade"));
+                usuario.setProdutosGerenciados(rs.getInt("produtos_gerenciados"));
+                usuario.setValorTotalProdutos(rs.getBigDecimal("valor_total_produtos"));
+                
+                usuarios.add(usuario);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return usuarios;
     }
     
     /**

@@ -2,6 +2,9 @@ package com.ecommerce.service;
 
 import com.ecommerce.dao.ProdutoDAO;
 import com.ecommerce.entity.Produto;
+import com.ecommerce.entity.AnaliseCategoria;
+import com.ecommerce.entity.AnalisePreco;
+import com.ecommerce.entity.ProdutoResponsavel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +89,26 @@ public class ProdutoService {
      */
     public long contarTotal() {
         return produtoDAO.contarTotal();
+    }
+    
+    /**
+     * Análise de produtos por categoria
+     */
+    public List<AnaliseCategoria> analisarPorCategoria() {
+        return produtoDAO.analisarPorCategoria();
+    }
+    
+    /**
+     * Análise de produtos por faixa de preço
+     */
+    public List<AnalisePreco> analisarPorPreco() {
+        return produtoDAO.analisarPorPreco();
+    }
+    
+    /**
+     * Lista produtos com responsáveis (JOIN)
+     */
+    public List<ProdutoResponsavel> listarProdutosComResponsaveis() {
+        return produtoDAO.listarProdutosComResponsaveis();
     }
 }

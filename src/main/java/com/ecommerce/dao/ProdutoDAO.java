@@ -2,6 +2,9 @@ package com.ecommerce.dao;
 
 import com.ecommerce.database.DatabaseConnection;
 import com.ecommerce.entity.Produto;
+import com.ecommerce.entity.AnaliseCategoria;
+import com.ecommerce.entity.AnalisePreco;
+import com.ecommerce.entity.ProdutoResponsavel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -254,6 +257,122 @@ public class ProdutoDAO {
         }
         
         return 0;
+    }
+    
+    /**
+     * Análise de produtos por categoria
+     */
+    public List<AnaliseCategoria> analisarPorCategoria() {
+        String sql = "SELECT categoria, COUNT(*) AS total_produtos, " +
+                    "SUM(quantidade_estoque) AS total_estoque, " +
+                    "ROUND(AVG(preco), 2) AS preco_medio, " +
+                    "ROUND(SUM(preco * quantidade_estoque), 2) AS valor_total_estoque " +
+                    "FROM Produto " +
+                    "GROUP BY categoria " +
+                    "HAVING total_produtos > 0 " +
+                    "ORDER BY valor_total_estoque DESC";
+        
+        List<AnaliseCategoria> analises = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                AnaliseCategoria analise = new AnaliseCategoria();
+                analise.setCategoria(rs.getString("categoria"));
+                analise.setTotalProdutos(rs.getInt("total_produtos"));
+                analise.setTotalEstoque(rs.getInt("total_estoque"));
+                analise.setPrecoMedio(rs.getBigDecimal("preco_medio"));
+                analise.setValorTotalEstoque(rs.getBigDecimal("valor_total_estoque"));
+                
+                analises.add(analise);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return analises;
+    }
+    
+    /**
+     * Análise de produtos por faixa de preço
+     */
+    public List<AnalisePreco> analisarPorPreco() {
+        String sql = "SELECT " +
+                    "CASE " +
+                    "WHEN preco < 50 THEN 'Até R$ 50' " +
+                    "WHEN preco BETWEEN 50 AND 100 THEN 'R$ 50 - R$ 100' " +
+                    "WHEN preco BETWEEN 100 AND 200 THEN 'R$ 100 - R$ 200' " +
+                    "WHEN preco BETWEEN 200 AND 500 THEN 'R$ 200 - R$ 500' " +
+                    "ELSE 'Acima de R$ 500' " +
+                    "END AS faixa_preco, " +
+                    "COUNT(*) AS total_produtos, " +
+                    "ROUND(AVG(preco), 2) AS preco_medio, " +
+                    "SUM(quantidade_estoque) AS total_estoque " +
+                    "FROM Produto " +
+                    "GROUP BY faixa_preco " +
+                    "ORDER BY MIN(preco)";
+        
+        List<AnalisePreco> analises = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                AnalisePreco analise = new AnalisePreco();
+                analise.setFaixaPreco(rs.getString("faixa_preco"));
+                analise.setTotalProdutos(rs.getInt("total_produtos"));
+                analise.setPrecoMedio(rs.getBigDecimal("preco_medio"));
+                analise.setTotalEstoque(rs.getInt("total_estoque"));
+                
+                analises.add(analise);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return analises;
+    }
+    
+    /**
+     * Lista produtos com responsáveis (JOIN com Usuario)
+     */
+    public List<ProdutoResponsavel> listarProdutosComResponsaveis() {
+        String sql = "SELECT p.nome AS produto, p.preco, p.quantidade_estoque, p.armazem_id, " +
+                    "CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS responsavel_armazem, " +
+                    "u.email AS email_responsavel " +
+                    "FROM Produto p " +
+                    "LEFT JOIN Usuario u ON p.armazem_id = u.id " +
+                    "WHERE p.quantidade_estoque > 0 " +
+                    "ORDER BY p.armazem_id, p.nome";
+        
+        List<ProdutoResponsavel> produtos = new ArrayList<>();
+        
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                ProdutoResponsavel produto = new ProdutoResponsavel();
+                produto.setProduto(rs.getString("produto"));
+                produto.setPreco(rs.getBigDecimal("preco"));
+                produto.setQuantidadeEstoque(rs.getInt("quantidade_estoque"));
+                produto.setArmazemId(rs.getInt("armazem_id"));
+                produto.setResponsavelArmazem(rs.getString("responsavel_armazem"));
+                produto.setEmailResponsavel(rs.getString("email_responsavel"));
+                
+                produtos.add(produto);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return produtos;
     }
     
     /**
