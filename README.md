@@ -1,183 +1,227 @@
 # E-commerce Dashboard
 
-Sistema de dashboard para e-commerce com operações CRUD usando SQL puro (sem ORMs).
+Sistema de dashboard para e-commerce com operações CRUD usando **SQL puro** (sem ORMs) e **4 consultas analíticas** implementadas.
 
-## 🚀 Configuração
+##  Configuração Rápida
 
-### 🐳 **Execução com Docker (Recomendado)**
+### **1. Extrair a Pasta Zipada**
 
-1. **Clone o repositório:**
+1. **Extraia o arquivo .zip** em uma pasta de sua escolha:
+   ```
+   Exemplo: C:\projetos\ecommerce-dashboard\
+   ```
+
+2. **Navegue até a pasta do projeto:**
    ```bash
-   git clone https://github.com/biagalindoo/ecommerce-bd.git
-   cd ecommerce-bd
+   cd caminho/para/sua/pasta/ecommerce-dashboard
    ```
 
-2. **Configure o arquivo `.env`:**
-   ```bash
-   cp env.example .env
-   # Edite o arquivo .env com suas configurações de banco
-   ```
+##  **Pré-requisitos**
 
-3. **Execute com Docker:**
-   ```bash
-   # Linux/Mac
-   ./start.sh
-   
-   # Windows
-   start.bat
-   
-   # Ou manualmente
-   docker-compose up --build
-   ```
+Antes de começar, certifique-se de ter instalado:
 
-4. **Acesse a aplicação:**
-   - Dashboard: http://localhost:8080/ecommerce-dashboard/dashboard
-   - Usuários: http://localhost:8080/ecommerce-dashboard/usuario
-   - Produtos: http://localhost:8080/ecommerce-dashboard/produto
+- ✅ **Java 11 ou superior**
+- ✅ **Maven 3.6+**
+- ✅ **MySQL 8.0+**
+- ✅ **IDE** (IntelliJ IDEA, Eclipse, VS Code)
 
-### 🔧 **Execução Manual (Sem Docker)**
+##  **Configuração do Banco de Dados**
 
-#### 1. Configuração do Banco de Dados
+### **Passo 1: Criar o banco de dados**
+```bash
+# Conecte ao MySQL
+mysql -u root -p
 
-1. **Copie o arquivo de exemplo:**
-   ```bash
-   cp env.example .env
-   ```
+# Crie o banco de dados
+CREATE DATABASE ecommerce_db;
 
-2. **Edite o arquivo `.env` com suas configurações:**
-   ```env
-   # Configurações do Banco de Dados MySQL
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_NAME=ecommerce_bd
-   DB_USER=root
-   DB_PASSWORD=sua_senha_aqui
-   
-   # Configurações da Aplicação
-   APP_PORT=8080
-   APP_CONTEXT_PATH=/ecommerce-dashboard
-   
-   # Configurações de Conexão
-   DB_CONNECTION_TIMEOUT=30000
-   DB_MAX_CONNECTIONS=10
-   ```
+# Saia do MySQL
+exit;
+```
 
-#### 2. Configuração do MySQL
+### **Passo 2: Executar os scripts SQL**
+```bash
+# Execute os scripts na ordem (substitua pela sua senha do MySQL)
+mysql -u root -p ecommerce_db < 01-create-tables.sql
+mysql -u root -p ecommerce_db < 02-populate-tables.sql
+```
 
-1. **Execute os scripts SQL na ordem:**
-   ```bash
-   mysql -u root -p < 01-create-tables.sql
-   mysql -u root -p < 02-populate-tables.sql
-   ```
+##  **Configuração da Aplicação**
 
-2. **Teste as consultas:**
-   ```bash
-   mysql -u root -p < 03-consultas.sql
-   ```
+### **Passo 3: Configurar o arquivo `application.properties`**
 
-#### 3. Execução da Aplicação
+Abra o arquivo `src/main/resources/application.properties` e configure:
 
-1. **Compile o projeto:**
-   ```bash
-   mvn clean compile
-   ```
+```properties
+# Configurações do Banco de Dados
+spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db?useUnicode=true&characterEncoding=UTF-8
+spring.datasource.username=root
+spring.datasource.password=SUA_SENHA_DO_MYSQL_AQUI
 
-2. **Execute a aplicação Spring Boot:**
-   ```bash
-   mvn spring-boot:run
-   ```
+# Configurações da Aplicação
+server.port=8080
+server.servlet.context-path=/ecommerce-dashboard
 
-3. **Acesse a aplicação:**
-   - Dashboard: http://localhost:8080/ecommerce-dashboard/dashboard
-   - Usuários: http://localhost:8080/ecommerce-dashboard/usuarios
-   - Produtos: http://localhost:8080/ecommerce-dashboard/produtos
+# Configurações de Log
+logging.level.com.ecommerce=DEBUG
+```
 
-## 📁 Estrutura do Projeto
+** IMPORTANTE:** Substitua `SUA_SENHA_DO_MYSQL_AQUI` pela sua senha real do MySQL!
+
+##  **Execução da Aplicação**
+
+### **Passo 4: Executar o projeto**
+
+```bash
+# Compile o projeto
+mvn clean compile
+
+# Execute a aplicação
+mvn spring-boot:run
+```
+
+### **Passo 5: Acessar a aplicação**
+
+Após a execução, acesse:
+
+- ** Dashboard:** http://localhost:8080/ecommerce-dashboard/
+- ** Usuários:** http://localhost:8080/ecommerce-dashboard/usuarios
+- ** Produtos:** http://localhost:8080/ecommerce-dashboard/produtos
+- ** Consultas SQL:** http://localhost:8080/ecommerce-dashboard/consultas
+- ** Gráficos:** http://localhost:8080/ecommerce-dashboard/graficos
+
+##  **Consultas SQL Implementadas**
+
+O sistema inclui **4 consultas analíticas** implementadas com SQL puro:
+
+### **1. Usuários Completos** (Básico)
+- Lista todos os usuários com nome completo e idade calculada
+- **URL:** `/analise/usuarios`
+
+### **2. Análise por Faixa de Preço** (Básico)
+- Agrupa produtos por faixas de preço com estatísticas
+- **URL:** `/analise/preco`
+
+### **3. Produtos + Responsáveis** (Intermediário - JOIN)
+- Relaciona produtos com usuários responsáveis usando LEFT JOIN
+- **URL:** `/analise/produtos-responsaveis`
+
+### **4. Usuários com Produtos** (Intermediário - JOIN)
+- Analisa usuários com produtos que gerenciam e faixa etária
+- **URL:** `/analise/idade`
+
+##  **Tecnologias Utilizadas**
+
+- **Java 11+**
+- **Spring Boot 2.7.18**
+- **Spring MVC** (sem JPA/ORM)
+- **Thymeleaf** para templates
+- **MySQL** com SQL puro
+- **Bootstrap 5** para interface
+- **Maven** para dependências
+
+##  **Estrutura do Projeto**
 
 ```
 ├── src/main/java/com/ecommerce/
-│   ├── entity/          # Entidades JPA (Usuario, Produto, etc.)
-│   ├── repository/      # Repositories Spring Data JPA
+│   ├── entity/          # Entidades (Usuario, Produto, etc.)
+│   ├── dao/             # DAOs com SQL puro
 │   ├── service/         # Services com lógica de negócio
-│   ├── controller/      # Controllers REST/Web
-│   └── EcommerceDashboardApplication.java # Classe principal Spring Boot
+│   ├── controller/      # Controllers Web
+│   ├── database/        # Conexão com banco
+│   └── EcommerceDashboardApplication.java
 ├── src/main/resources/
 │   ├── templates/       # Templates Thymeleaf
-│   │   ├── layout/      # Layout base
 │   │   ├── dashboard/   # Páginas do dashboard
 │   │   ├── usuarios/    # Páginas de usuários
-│   │   └── produtos/    # Páginas de produtos
-│   └── application.properties # Configurações Spring Boot
+│   │   ├── produtos/    # Páginas de produtos
+│   │   ├── analise/     # Páginas de consultas
+│   │   └── consultas/   # Página principal de consultas
+│   ├── static/          # Arquivos estáticos (CSS, JS, imagens)
+│   └── application.properties
 ├── 01-create-tables.sql # Script de criação das tabelas
 ├── 02-populate-tables.sql # Script de população das tabelas
-├── 03-consultas.sql     # Consultas SQL de exemplo
-├── .env                 # Configurações do banco (não versionado)
-├── env.example          # Template de configuração
-├── Dockerfile           # Configuração Docker
-├── docker-compose.yml   # Orquestração Docker
+├── 03-consultas.sql     # 4 consultas SQL implementadas
 └── pom.xml              # Configuração Maven
 ```
 
-## 🔧 Funcionalidades
+##  **Funcionalidades**
 
 - ✅ **Dashboard** com estatísticas em tempo real
 - ✅ **CRUD de Usuários** (criar, listar, editar, deletar)
 - ✅ **CRUD de Produtos** (criar, listar, editar, deletar)
-- ✅ **Busca avançada** por nome, cidade, estado
-- ✅ **Filtro de estoque baixo** para produtos
-- ✅ **Validação de formulários** com Bean Validation
-- ✅ **Interface moderna** com Bootstrap 5 e CSS customizado
-- ✅ **Templates Thymeleaf** para renderização
-- ✅ **Spring Data JPA** para acesso a dados
-- ✅ **Health checks** com Spring Actuator
-- ✅ **Configuração via arquivo .env**
+- ✅ **4 Consultas SQL** implementadas com diferentes níveis
+- ✅ **2 JOINs** implementados (consultas 3 e 4)
+- ✅ **Interface moderna** com Bootstrap 5
+- ✅ **SQL puro** - sem ORMs ou frameworks de mapeamento
+- ✅ **Templates Thymeleaf** responsivos
+- ✅ **Validação de formulários** com Spring MVC
+- ✅ **Página de consultas** organizada e bonita
 
-## 🛠️ Tecnologias
+##  **Características Técnicas**
 
-- **Java 11+**
-- **Spring Boot 2.7.18**
-- **Spring Data JPA**
-- **Spring MVC**
-- **Thymeleaf**
-- **Maven**
-- **MySQL**
-- **Docker & Docker Compose**
+- **SQL Puro:** Todas as consultas usam SQL direto via JDBC
+- **Sem ORM:** Nenhum framework de mapeamento objeto-relacional
+- **JOINs:** 2 consultas implementam relacionamentos entre tabelas
+- **Agregações:** COUNT, SUM, AVG, MIN, MAX implementados
+- **Funções:** CASE WHEN, CONCAT, TIMESTAMPDIFF, COALESCE
+- **Interface:** Bootstrap 5 com design responsivo
 
-## 🐳 **Docker**
+##  **Notas Importantes**
 
-### Comandos Docker
+- ✅ **Todas as operações** usam SQL puro via JDBC
+- ✅ **Sem dependências** de JPA, Hibernate ou outros ORMs
+- ✅ **4 consultas funcionais** que fazem sentido para e-commerce
+- ✅ **Interface completa** para todas as funcionalidades
+- ✅ **Código limpo** sem arquivos inúteis
 
+##  **Solução de Problemas**
+
+### **Problema: Erro de conexão com MySQL**
+```
+Caused by: java.sql.SQLException: Access denied for user 'root'@'localhost'
+```
+**Solução:** Verifique se a senha no `application.properties` está correta.
+
+### **Problema: Banco de dados não encontrado**
+```
+Caused by: java.sql.SQLException: Unknown database 'ecommerce_db'
+```
+**Solução:** Execute os scripts SQL na ordem correta:
 ```bash
-# Construir e iniciar
-docker-compose up --build
-
-# Executar em background
-docker-compose up -d
-
-# Parar containers
-docker-compose down
-
-# Ver logs
-docker-compose logs -f
-
-# Reconstruir apenas a aplicação
-docker-compose build ecommerce-app
-
-# Executar comandos no container
-docker-compose exec ecommerce-app bash
+mysql -u root -p ecommerce_db < 01-create-tables.sql
+mysql -u root -p ecommerce_db < 02-populate-tables.sql
 ```
 
-### Arquivos Docker
+### **Problema: Porta 8080 já está em uso**
+```
+Port 8080 was already in use
+```
+**Solução:** 
+- Pare outros serviços na porta 8080
+- Ou altere a porta no `application.properties`:
+```properties
+server.port=8081
+```
 
-- `Dockerfile` - Configuração da imagem da aplicação
-- `docker-compose.yml` - Configuração dos serviços
-- `docker-compose.override.yml` - Configurações de desenvolvimento
-- `.dockerignore` - Arquivos ignorados no build
-- `start.sh` / `start.bat` - Scripts de inicialização
+### **Problema: Maven não encontrado**
+```
+'mvn' is not recognized as an internal or external command
+```
+**Solução:** 
+- Instale o Maven
+- Ou use o wrapper: `./mvnw spring-boot:run` (Linux/Mac) ou `mvnw.cmd spring-boot:run` (Windows)
 
-## 📝 Notas
 
-- O arquivo `.env` contém informações sensíveis e não deve ser versionado
-- Use o arquivo `env.example` como template para suas configurações
-- Todas as operações de banco usam SQL puro, sem ORMs
-- A aplicação usa o padrão Singleton para conexão com banco
+1. **Verifique os logs** da aplicação no console
+2. **Confirme se o MySQL está rodando** na porta 3306
+3. **Teste a conexão** com o banco manualmente
+4. **Verifique se todas as dependências** estão instaladas
+
+## **Resumo Rápido**
+
+1. ✅ **Extraia a pasta zipada** em uma pasta de sua escolha
+2. ✅ **Configure o MySQL** e execute os scripts SQL
+3. ✅ **Edite o `application.properties`** com sua senha do MySQL
+4. ✅ **Execute `mvn spring-boot:run`** na pasta do projeto
+5. ✅ **Acesse** http://localhost:8080/ecommerce-dashboard/

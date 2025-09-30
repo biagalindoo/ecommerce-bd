@@ -1,11 +1,9 @@
 
--- CONSULTAS SQL - DIFERENTES NÍVEIS DE DIFICULDADE
-
+-- CONSULTAS SQL - 
 
 -- CONSULTA 1: SIMPLES - Listar todos os usuários com informações básicas
 -- Nível: Básico
 -- Descrição: Lista todos os usuários com nome completo e email
--- Dificuldade: Baixa
 
 SELECT 
     id,
@@ -21,7 +19,6 @@ ORDER BY primeiro_nome, sobrenome;
 -- CONSULTA 2: SIMPLES - Análise de produtos por faixa de preço
 -- Nível: Básico
 -- Descrição: Conta produtos por faixas de preço
--- Dificuldade: Baixa
 
 SELECT 
     CASE 
@@ -39,10 +36,10 @@ GROUP BY faixa_preco
 ORDER BY MIN(preco);
 
 
--- CONSULTA 3: COM JOIN - Produtos e usuários por armazém (simulado)
+-- CONSULTA 3: COM JOIN - Produtos e usuários por armazém (simulado) como não implementamos o armazem, a consulta seria meio que produtos por usuario, quando implementarmos o armazem, a consulta será alterada para produtos por armazem pelo armazem_id
 -- Nível: Intermediário
 -- Descrição: Relaciona produtos com "usuários responsáveis" baseado no armazem_id
--- Dificuldade: Média
+
 
 SELECT 
     p.nome AS produto,
@@ -60,8 +57,6 @@ ORDER BY p.armazem_id, p.nome;
 -- CONSULTA 4: AVANÇADA - Análise de usuários por faixa etária com produtos
 -- Nível: Intermediário
 -- Descrição: Analisa usuários agrupados por faixa etária e relaciona com produtos que gerenciam
--- Dificuldade: Média
-
 SELECT 
     u.id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
