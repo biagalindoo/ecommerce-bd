@@ -71,3 +71,4 @@ A página se adapta automaticamente a diferentes tamanhos de tela:
 ✅ **15 gráficos com descrições detalhadas**
 
 **Agora é só adicionar suas imagens na pasta indicada!** 🎯
+

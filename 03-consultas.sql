@@ -1,10 +1,8 @@
--- ===============================================
--- CONSULTAS SQL - DIFERENTES NÍVEIS DE DIFICULDADE
--- ===============================================
 
--- ===============================================
+-- CONSULTAS SQL - DIFERENTES NÍVEIS DE DIFICULDADE
+
+
 -- CONSULTA 1: SIMPLES - Listar usuários com seus telefones
--- ===============================================
 -- Nível: Básico
 -- Descrição: Lista todos os usuários com seus respectivos telefones
 -- Dificuldade: Baixa
@@ -19,9 +17,8 @@ FROM Usuario u
 LEFT JOIN Telefone t ON u.id = t.usuario_id
 ORDER BY u.primeiro_nome, u.sobrenome;
 
--- ===============================================
+
 -- CONSULTA 2: COM JOIN - Relatório completo de pedidos
--- ===============================================
 -- Nível: Intermediário
 -- Descrição: Relatório detalhado de pedidos com informações do usuário, 
 --           endereço, produtos e status de pagamento
@@ -49,9 +46,8 @@ INNER JOIN Produto pr ON ip.produto_id = pr.id
 LEFT JOIN Pagamento pg ON p.id = pg.pedido_id
 ORDER BY p.data_pedido DESC, p.id;
 
--- ===============================================
--- CONSULTA 3: COMPLEXA - Análise de vendas por fornecedor
--- ===============================================
+
+-- CONSULTA 3: - Análise de vendas por fornecedor
 -- Nível: Avançado
 -- Descrição: Análise completa de vendas por fornecedor, incluindo
 --           quantidade vendida, receita total e margem de lucro
@@ -79,9 +75,8 @@ GROUP BY f.id, f.nome_fantasia, f.razao_social
 HAVING total_pedidos > 0
 ORDER BY receita_total DESC;
 
--- ===============================================
+
 -- CONSULTA 4: Análise de performance de usuários
--- ===============================================
 -- Nível: Intermediário-Avançado
 -- Descrição: Análise de comportamento dos usuários baseada em pedidos e carrinho
 -- Dificuldade: Média-Alta

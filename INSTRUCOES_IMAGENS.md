@@ -85,3 +85,4 @@ copy "caminho\para\sua\imagem.png" "src\main\resources\static\images\graficos\gr
 - **Ícones coloridos** para cada tipo de gráfico
 
 **🎊 Sua página está pronta! Só adicionar as imagens e reiniciar o Spring Boot!**
+
