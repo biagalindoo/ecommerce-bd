@@ -128,10 +128,10 @@ INSERT INTO Armazem (nome) VALUES
 
 INSERT INTO Produto (nome, descricao, preco, quantidade_estoque, armazem_id) VALUES
 ('Smartphone Samsung Galaxy S23', 'Smartphone Android com 128GB de armazenamento', 1299.99, 45, 1),
-('Notebook Dell Inspiron 15', 'Notebook Intel i5, 8GB RAM, 256GB SSD', 2499.99, 23, 2),
-('TV LED 55" LG', 'Smart TV 4K com HDR e sistema webOS', 1899.99, 18, 3),
-('Fogão 4 Bocas Brastemp', 'Fogão a gás com forno elétrico', 599.99, 32, 4),
-('Geladeira Consul 2 Portas', 'Geladeira frost-free 310L', 1299.99, 15, 5),
+('Notebook Dell Inspiron 15', 'Notebook Intel i5, 8GB RAM, 256GB SSD', 2499.99, 23, 1),
+('TV LED 55" LG', 'Smart TV 4K com HDR e sistema webOS', 1899.99, 18, 1),
+('Fogão 4 Bocas Brastemp', 'Fogão a gás com forno elétrico', 599.99, 32, 2),
+('Geladeira Consul 2 Portas', 'Geladeira frost-free 310L', 1299.99, 15, 2),
 ('Máquina de Lavar Electrolux', 'Lavadora 12kg com turbo power', 899.99, 28, 6),
 ('Micro-ondas Panasonic', 'Micro-ondas 32L com grill', 399.99, 41, 7),
 ('Aspirador de Pó Electrolux', 'Aspirador vertical sem fio', 299.99, 36, 8),
