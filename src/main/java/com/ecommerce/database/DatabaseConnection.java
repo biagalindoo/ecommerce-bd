@@ -13,14 +13,9 @@ import java.sql.SQLException;
 @Component
 public class DatabaseConnection {
     
-    @Value("${spring.datasource.url}")
-    private String url;
-    
-    @Value("${spring.datasource.username}")
-    private String username;
-    
-    @Value("${spring.datasource.password}")
-    private String password;
+    private String url = "jdbc:mysql://localhost:3306/ecommerce_bd?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8";
+    private String username = "root";
+    private String password = "biafera123";
     
     /**
      * Obtém uma conexão com o banco de dados

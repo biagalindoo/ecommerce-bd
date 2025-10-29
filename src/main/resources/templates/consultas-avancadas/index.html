@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultas Avançadas - E-commerce Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .consultation-card {
+            border-left: 4px solid #007bff;
+        }
+        .view-card {
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="position-sticky pt-4">
+                    <div class="text-center mb-4">
+                        <h3 class="text-white mb-0">
+                            <i class="fas fa-store me-2"></i>
+                            E-commerce
+                        </h3>
+                        <small class="text-white-50">Dashboard</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/dashboard}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/usuarios}">
+                                <i class="fas fa-users me-2"></i>
+                                Usuários
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/produtos}">
+                                <i class="fas fa-box me-2"></i>
+                                Produtos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/consultas-avancadas}">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Consultas Avançadas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><i class="fas fa-chart-line"></i> Consultas Avançadas</h1>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Sobre as Consultas Avançadas</h5>
+                            <p class="mb-0">Esta seção contém consultas complexas implementadas com diferentes tipos de JOINs, subconsultas e visões para análise avançada dos dados do e-commerce.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultas Avançadas -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h3 class="mb-4"><i class="fas fa-search"></i> Consultas Avançadas</h3>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card consultation-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-user-times feature-icon text-danger"></i>
+                                    <h5 class="card-title">Anti JOIN</h5>
+                                    <p class="card-text">Usuários que nunca fizeram pedidos</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> LEFT JOIN com filtro NULL</li>
+                                    <li><i class="fas fa-check text-success"></i> Identifica usuários inativos</li>
+                                    <li><i class="fas fa-check text-success"></i> Análise de engajamento</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/anti-join}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-play"></i> Executar Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card consultation-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-link feature-icon text-info"></i>
+                                    <h5 class="card-title">Full Outer JOIN</h5>
+                                    <p class="card-text">Análise completa de produtos e fornecedores</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Mostra todos os registros</li>
+                                    <li><i class="fas fa-check text-success"></i> Inclui relacionamentos nulos</li>
+                                    <li><i class="fas fa-check text-success"></i> Visão completa dos dados</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/full-outer-join}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-play"></i> Executar Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card consultation-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-box feature-icon text-warning"></i>
+                                    <h5 class="card-title">Subconsulta - Produtos</h5>
+                                    <p class="card-text">Produtos com preço acima da média do armazém</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Subconsulta na cláusula WHERE</li>
+                                    <li><i class="fas fa-check text-success"></i> Comparação com média</li>
+                                    <li><i class="fas fa-check text-success"></i> Análise de preços</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/subconsulta-produtos}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-play"></i> Executar Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card consultation-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-users feature-icon text-primary"></i>
+                                    <h5 class="card-title">Subconsulta - Usuários</h5>
+                                    <p class="card-text">Usuários com gastos acima da média</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Subconsulta na cláusula HAVING</li>
+                                    <li><i class="fas fa-check text-success"></i> Comparação com média geral</li>
+                                    <li><i class="fas fa-check text-success"></i> Análise de comportamento</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/subconsulta-usuarios}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-play"></i> Executar Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visões -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h3 class="mb-4"><i class="fas fa-eye"></i> Visões (Views)</h3>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card view-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-bar feature-icon text-success"></i>
+                                    <h5 class="card-title">Dashboard de Vendas</h5>
+                                    <p class="card-text">Visão consolidada de vendas por usuário</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> 3+ JOINs (Usuario, Pedido, Endereco, Telefone)</li>
+                                    <li><i class="fas fa-check text-success"></i> Agregações complexas</li>
+                                    <li><i class="fas fa-check text-success"></i> Dados consolidados</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/visao-dashboard-vendas}" class="btn btn-outline-success w-100">
+                                    <i class="fas fa-eye"></i> Visualizar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card view-card h-100 card-hover">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-warehouse feature-icon text-info"></i>
+                                    <h5 class="card-title">Produtos e Fornecedores</h5>
+                                    <p class="card-text">Análise completa de produtos e fornecedores</p>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> 3+ JOINs (Produto, Fornecedor, Armazem, ItemPedido)</li>
+                                    <li><i class="fas fa-check text-success"></i> Cálculos de margem</li>
+                                    <li><i class="fas fa-check text-success"></i> Status de estoque</li>
+                                </ul>
+                                <a th:href="@{/consultas-avancadas/visao-produtos-fornecedores}" class="btn btn-outline-success w-100">
+                                    <i class="fas fa-eye"></i> Visualizar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Índices -->
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="mb-4"><i class="fas fa-database"></i> Índices Criados</h3>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-key text-primary"></i> Índices de Performance</h6>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><code>idx_usuario_data_nascimento</code></span>
+                                                <span class="badge bg-primary rounded-pill">Idade</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><code>idx_produto_preco</code></span>
+                                                <span class="badge bg-primary rounded-pill">Preço</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-chart-line text-success"></i> Índices de Análise</h6>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><code>idx_pedido_status</code></span>
+                                                <span class="badge bg-success rounded-pill">Status</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><code>idx_pedido_data</code></span>
+                                                <span class="badge bg-success rounded-pill">Data</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
