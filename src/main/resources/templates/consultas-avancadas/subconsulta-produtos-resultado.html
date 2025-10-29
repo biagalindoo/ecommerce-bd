@@ -73,33 +73,41 @@
                                 <h5 class="mb-0"><i class="fas fa-table"></i> Resultados</h5>
                             </div>
                             <div class="card-body">
-                                <div th:if="${usuarios != null and !usuarios.empty}">
+                                <div th:if="${produtos != null and !produtos.empty}">
                                     <div class="table-responsive">
                                         <table class="table table-striped table-hover">
                                             <thead class="table-dark">
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Nome Completo</th>
-                                                    <th>Email</th>
-                                                    <th>Idade</th>
-                                                    <th>Data de Nascimento</th>
-                                                    <th>Status</th>
+                                                    <th>Nome do Produto</th>
+                                                    <th>Preço</th>
+                                                    <th>Estoque</th>
+                                                    <th>Armazém</th>
+                                                    <th>Total Vendido</th>
+                                                    <th>Receita Total</th>
+                                                    <th>Preço Médio Vendido</th>
+                                                    <th>Preço Médio Geral</th>
+                                                    <th>Diferença da Média</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr th:each="usuario : ${usuarios}">
-                                                    <td th:text="${usuario.id}">1</td>
-                                                    <td th:text="${usuario.nomeCompleto}">João Silva</td>
-                                                    <td th:text="${usuario.email}">joao@email.com</td>
-                                                    <td th:text="${usuario.idade}">25</td>
-                                                    <td th:text="${usuario.dataNascimento != null ? #dates.format(usuario.dataNascimento, 'dd/MM/yyyy') : 'N/A'}">01/01/2000</td>
-                                                    <td th:text="${usuario.statusCompra != null ? usuario.statusCompra : 'N/A'}">Nunca fez pedidos</td>
+                                                <tr th:each="produto : ${produtos}">
+                                                    <td th:text="${produto.id}">1</td>
+                                                    <td th:text="${produto.nome}">Produto Exemplo</td>
+                                                    <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 100,00</td>
+                                                    <td th:text="${produto.quantidadeEstoque}">10</td>
+                                                    <td th:text="${produto.nomeArmazem != null ? produto.nomeArmazem : 'N/A'}">Armazém Central</td>
+                                                    <td th:text="${produto.totalVendido}">25</td>
+                                                    <td th:text="${#numbers.formatDecimal(produto.receitaTotal, 1, 2)}">R$ 2.500,00</td>
+                                                    <td th:text="${#numbers.formatDecimal(produto.precoMedioVendido, 1, 2)}">R$ 100,00</td>
+                                                    <td th:text="${#numbers.formatDecimal(produto.precoMedioGeral, 1, 2)}">R$ 80,00</td>
+                                                    <td th:text="${#numbers.formatDecimal(produto.diferencaMediaGeral, 1, 2)}">R$ 20,00</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                <div th:if="${usuarios == null or usuarios.empty}" class="text-center text-muted">
+                                <div th:if="${produtos == null or produtos.empty}" class="text-center text-muted">
                                     <i class="fas fa-info-circle fa-3x mb-3"></i>
                                     <p>Nenhum resultado encontrado.</p>
                                 </div>

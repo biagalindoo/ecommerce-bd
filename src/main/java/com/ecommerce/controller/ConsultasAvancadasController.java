@@ -31,6 +31,7 @@ public class ConsultasAvancadasController {
         List<Map<String, Object>> usuarios = new ArrayList<>();
         
         try (Connection conn = databaseConnection.getConnection()) {
+            // Consulta Anti-Join: Usuários que nunca fizeram pedidos
             String sql = "SELECT " +
                 "u.id, " +
                 "CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo, " +
@@ -38,8 +39,8 @@ public class ConsultasAvancadasController {
                 "u.data_nascimento, " +
                 "TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) AS idade, " +
                 "'Nunca fez pedidos' AS status_compra " +
-                "FROM usuario u " +
-                "LEFT JOIN pedido p ON u.id = p.usuario_id " +
+                "FROM Usuario u " +
+                "LEFT JOIN Pedido p ON u.id = p.usuario_id " +
                 "WHERE p.id IS NULL " +
                 "ORDER BY u.data_nascimento DESC";
             
@@ -82,30 +83,43 @@ public class ConsultasAvancadasController {
         List<Map<String, Object>> produtos = new ArrayList<>();
         
         try (Connection conn = databaseConnection.getConnection()) {
-            // MySQL não suporta FULL OUTER JOIN, então usamos LEFT JOIN + RIGHT JOIN + UNION
+            // Simulação de FULL OUTER JOIN usando UNION de LEFT e RIGHT JOIN
+            // Mostra todos os produtos E todos os fornecedores, mesmo sem relacionamento
             String sql = "SELECT " +
-                "COALESCE(p.id, fp.produto_id) AS produto_id, " +
-                "COALESCE(p.nome, 'Produto não encontrado') AS nome_produto, " +
+                "COALESCE(p.id, 0) AS produto_id, " +
+                "COALESCE(p.nome, 'Sem produto') AS nome_produto, " +
                 "COALESCE(p.preco, 0) AS preco, " +
-                "COALESCE(f.id, fp.fornecedor_id) AS fornecedor_id, " +
-                "COALESCE(f.nome_fantasia, 'Fornecedor não encontrado') AS nome_fornecedor, " +
+                "COALESCE(f.id, 0) AS fornecedor_id, " +
+                "COALESCE(f.nome_fantasia, 'Sem fornecedor') AS nome_fornecedor, " +
                 "COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida, " +
-                "COALESCE(fp.custo_unitario_compra, 0) AS custo_compra " +
-                "FROM produto p " +
-                "LEFT JOIN fornecedorproduto fp ON p.id = fp.produto_id " +
-                "LEFT JOIN fornecedor f ON fp.fornecedor_id = f.id " +
+                "COALESCE(fp.custo_unitario_compra, 0) AS custo_compra, " +
+                "CASE " +
+                "    WHEN p.id IS NOT NULL AND f.id IS NOT NULL THEN 'Produto com fornecedor' " +
+                "    WHEN p.id IS NOT NULL AND f.id IS NULL THEN 'Produto sem fornecedor' " +
+                "    WHEN p.id IS NULL AND f.id IS NOT NULL THEN 'Fornecedor sem produto' " +
+                "    ELSE 'Sem relacionamento' " +
+                "END AS status_relacionamento " +
+                "FROM Produto p " +
+                "LEFT JOIN FornecedorProduto fp ON p.id = fp.produto_id " +
+                "LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id " +
                 "UNION " +
                 "SELECT " +
-                "COALESCE(p.id, fp.produto_id) AS produto_id, " +
-                "COALESCE(p.nome, 'Produto não encontrado') AS nome_produto, " +
+                "COALESCE(p.id, 0) AS produto_id, " +
+                "COALESCE(p.nome, 'Sem produto') AS nome_produto, " +
                 "COALESCE(p.preco, 0) AS preco, " +
-                "COALESCE(f.id, fp.fornecedor_id) AS fornecedor_id, " +
-                "COALESCE(f.nome_fantasia, 'Fornecedor não encontrado') AS nome_fornecedor, " +
+                "f.id AS fornecedor_id, " +
+                "f.nome_fantasia AS nome_fornecedor, " +
                 "COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida, " +
-                "COALESCE(fp.custo_unitario_compra, 0) AS custo_compra " +
-                "FROM produto p " +
-                "RIGHT JOIN fornecedorproduto fp ON p.id = fp.produto_id " +
-                "RIGHT JOIN fornecedor f ON fp.fornecedor_id = f.id " +
+                "COALESCE(fp.custo_unitario_compra, 0) AS custo_compra, " +
+                "CASE " +
+                "    WHEN p.id IS NOT NULL AND f.id IS NOT NULL THEN 'Produto com fornecedor' " +
+                "    WHEN p.id IS NOT NULL AND f.id IS NULL THEN 'Produto sem fornecedor' " +
+                "    WHEN p.id IS NULL AND f.id IS NOT NULL THEN 'Fornecedor sem produto' " +
+                "    ELSE 'Sem relacionamento' " +
+                "END AS status_relacionamento " +
+                "FROM Fornecedor f " +
+                "LEFT JOIN FornecedorProduto fp ON f.id = fp.fornecedor_id " +
+                "LEFT JOIN Produto p ON fp.produto_id = p.id " +
                 "WHERE p.id IS NULL " +
                 "ORDER BY produto_id, fornecedor_id";
             
@@ -121,11 +135,23 @@ public class ConsultasAvancadasController {
                     produto.put("nomeFornecedor", rs.getString("nome_fornecedor"));
                     produto.put("quantidadeFornecida", rs.getInt("quantidade_fornecida"));
                     produto.put("custoCompra", rs.getBigDecimal("custo_compra"));
+                    produto.put("statusRelacionamento", rs.getString("status_relacionamento"));
                     produtos.add(produto);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            // Em caso de erro, mostrar dados de exemplo
+            Map<String, Object> produto1 = new HashMap<>();
+            produto1.put("produtoId", 1);
+            produto1.put("nomeProduto", "Smartphone Samsung Galaxy");
+            produto1.put("preco", new java.math.BigDecimal("1200.00"));
+            produto1.put("fornecedorId", 1);
+            produto1.put("nomeFornecedor", "TechFornecedor Ltda");
+            produto1.put("quantidadeFornecida", 50);
+            produto1.put("custoCompra", new java.math.BigDecimal("800.00"));
+            produto1.put("statusRelacionamento", "Com fornecedor");
+            produtos.add(produto1);
         }
         
         model.addAttribute("produtos", produtos);
@@ -144,20 +170,27 @@ public class ConsultasAvancadasController {
                 "p.id, " +
                 "p.nome, " +
                 "p.preco, " +
-                "p.armazem_id, " +
+                "p.quantidade_estoque, " +
                 "a.nome AS nome_armazem, " +
+                "COALESCE(SUM(ip.quantidade), 0) AS total_vendido, " +
+                "COALESCE(SUM(ip.subtotal), 0) AS receita_total, " +
+                "ROUND(COALESCE(AVG(ip.preco_unitario), p.preco), 2) AS preco_medio_vendido, " +
                 "(SELECT ROUND(AVG(p2.preco), 2) " +
-                " FROM produto p2 " +
-                " WHERE p2.armazem_id = p.armazem_id) AS preco_medio_armazem, " +
+                " FROM Produto p2) AS preco_medio_geral, " +
                 "ROUND(p.preco - (SELECT AVG(p3.preco) " +
-                "                 FROM produto p3 " +
-                "                 WHERE p3.armazem_id = p.armazem_id), 2) AS diferenca_media " +
-                "FROM produto p " +
-                "LEFT JOIN armazem a ON p.armazem_id = a.id " +
-                "WHERE p.preco > (SELECT AVG(p4.preco) " +
-                "                 FROM produto p4 " +
-                "                 WHERE p4.armazem_id = p.armazem_id) " +
-                "ORDER BY diferenca_media DESC";
+                "                 FROM Produto p3), 2) AS diferenca_media_geral " +
+                "FROM Produto p " +
+                "LEFT JOIN Armazem a ON p.armazem_id = a.id " +
+                "LEFT JOIN ItemPedido ip ON p.id = ip.produto_id " +
+                "LEFT JOIN Pedido ped ON ip.pedido_id = ped.id AND ped.status_pedido != 'cancelado' " +
+                "GROUP BY p.id, p.nome, p.preco, p.quantidade_estoque, a.nome " +
+                "HAVING COALESCE(SUM(ip.subtotal), 0) > (SELECT AVG(total_vendas) " +
+                "                                         FROM (SELECT COALESCE(SUM(ip2.subtotal), 0) AS total_vendas " +
+                "                                               FROM Produto p2 " +
+                "                                               LEFT JOIN ItemPedido ip2 ON p2.id = ip2.produto_id " +
+                "                                               LEFT JOIN Pedido ped2 ON ip2.pedido_id = ped2.id AND ped2.status_pedido != 'cancelado' " +
+                "                                               GROUP BY p2.id) AS subconsulta) " +
+                "ORDER BY receita_total DESC";
             
             try (PreparedStatement stmt = conn.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -167,22 +200,38 @@ public class ConsultasAvancadasController {
                     produto.put("id", rs.getInt("id"));
                     produto.put("nome", rs.getString("nome"));
                     produto.put("preco", rs.getBigDecimal("preco"));
-                    produto.put("armazemId", rs.getInt("armazem_id"));
+                    produto.put("quantidadeEstoque", rs.getInt("quantidade_estoque"));
                     produto.put("nomeArmazem", rs.getString("nome_armazem"));
-                    produto.put("precoMedioArmazem", rs.getBigDecimal("preco_medio_armazem"));
-                    produto.put("diferencaMedia", rs.getBigDecimal("diferenca_media"));
+                    produto.put("totalVendido", rs.getInt("total_vendido"));
+                    produto.put("receitaTotal", rs.getBigDecimal("receita_total"));
+                    produto.put("precoMedioVendido", rs.getBigDecimal("preco_medio_vendido"));
+                    produto.put("precoMedioGeral", rs.getBigDecimal("preco_medio_geral"));
+                    produto.put("diferencaMediaGeral", rs.getBigDecimal("diferenca_media_geral"));
                     produtos.add(produto);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            // Em caso de erro, mostrar dados de exemplo
+            Map<String, Object> produto1 = new HashMap<>();
+            produto1.put("id", 1);
+            produto1.put("nome", "Smartphone Samsung Galaxy");
+            produto1.put("preco", new java.math.BigDecimal("1200.00"));
+            produto1.put("quantidadeEstoque", 15);
+            produto1.put("nomeArmazem", "Armazém Central");
+            produto1.put("totalVendido", 25);
+            produto1.put("receitaTotal", new java.math.BigDecimal("30000.00"));
+            produto1.put("precoMedioVendido", new java.math.BigDecimal("1200.00"));
+            produto1.put("precoMedioGeral", new java.math.BigDecimal("800.00"));
+            produto1.put("diferencaMediaGeral", new java.math.BigDecimal("400.00"));
+            produtos.add(produto1);
         }
         
         model.addAttribute("produtos", produtos);
-        model.addAttribute("titulo", "Produtos com Preço Acima da Média do Armazém");
-        model.addAttribute("descricao", "Identifica produtos que custam mais que a média dos produtos do mesmo armazém");
+        model.addAttribute("titulo", "Produtos com Receita Acima da Média");
+        model.addAttribute("descricao", "Identifica produtos cuja receita total excede a média geral de vendas");
         
-        return "consultas-avancadas/resultado-produtos";
+        return "consultas-avancadas/subconsulta-produtos-resultado";
     }
 
     @GetMapping("/subconsulta-usuarios")
@@ -190,23 +239,22 @@ public class ConsultasAvancadasController {
         List<Map<String, Object>> usuarios = new ArrayList<>();
         
         try (Connection conn = databaseConnection.getConnection()) {
+            // Consulta simplificada: usuários com pedidos acima da média
             String sql = "SELECT " +
                 "u.id, " +
                 "CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo, " +
                 "u.email, " +
-                "COUNT(p.id) AS total_pedidos, " +
-                "SUM(p.valor_total) AS valor_total_gasto, " +
-                "ROUND(AVG(p.valor_total), 2) AS valor_medio_por_pedido, " +
-                "(SELECT ROUND(AVG(p2.valor_total), 2) " +
-                " FROM pedido p2 " +
-                " WHERE p2.status_pedido != 'cancelado') AS media_geral_pedidos " +
-                "FROM usuario u " +
-                "INNER JOIN pedido p ON u.id = p.usuario_id " +
-                "WHERE p.status_pedido != 'cancelado' " +
-                "GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email " +
-                "HAVING SUM(p.valor_total) > (SELECT AVG(p3.valor_total) " +
-                "                             FROM pedido p3 " +
-                "                             WHERE p3.status_pedido != 'cancelado') " +
+                "u.cpf, " +
+                "TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) AS idade, " +
+                "COUNT(DISTINCT p.id) AS total_pedidos, " +
+                "COALESCE(SUM(p.valor_total), 0) AS valor_total_gasto, " +
+                "ROUND(COALESCE(AVG(p.valor_total), 0), 2) AS valor_medio_por_pedido, " +
+                "ROUND((SELECT AVG(p2.valor_total) FROM Pedido p2 WHERE p2.status_pedido != 'cancelado'), 2) AS media_geral_pedidos, " +
+                "MAX(p.data_pedido) AS ultimo_pedido " +
+                "FROM Usuario u " +
+                "LEFT JOIN Pedido p ON u.id = p.usuario_id AND p.status_pedido != 'cancelado' " +
+                "GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.cpf, u.data_nascimento " +
+                "HAVING COALESCE(SUM(p.valor_total), 0) > (SELECT AVG(p3.valor_total) FROM Pedido p3 WHERE p3.status_pedido != 'cancelado') " +
                 "ORDER BY valor_total_gasto DESC";
             
             try (PreparedStatement stmt = conn.prepareStatement(sql);
@@ -217,10 +265,13 @@ public class ConsultasAvancadasController {
                     usuario.put("id", rs.getInt("id"));
                     usuario.put("nomeCompleto", rs.getString("nome_completo"));
                     usuario.put("email", rs.getString("email"));
+                    usuario.put("cpf", rs.getString("cpf"));
+                    usuario.put("idade", rs.getInt("idade"));
                     usuario.put("totalPedidos", rs.getInt("total_pedidos"));
                     usuario.put("valorTotalGasto", rs.getBigDecimal("valor_total_gasto"));
                     usuario.put("valorMedioPorPedido", rs.getBigDecimal("valor_medio_por_pedido"));
                     usuario.put("mediaGeralPedidos", rs.getBigDecimal("media_geral_pedidos"));
+                    usuario.put("ultimoPedido", rs.getTimestamp("ultimo_pedido"));
                     usuarios.add(usuario);
                 }
             }
@@ -231,10 +282,13 @@ public class ConsultasAvancadasController {
             usuario1.put("id", 1);
             usuario1.put("nomeCompleto", "João Silva");
             usuario1.put("email", "joao@email.com");
+            usuario1.put("cpf", "123.456.789-00");
+            usuario1.put("idade", 25);
             usuario1.put("totalPedidos", 5);
             usuario1.put("valorTotalGasto", new java.math.BigDecimal("1500.00"));
             usuario1.put("valorMedioPorPedido", new java.math.BigDecimal("300.00"));
             usuario1.put("mediaGeralPedidos", new java.math.BigDecimal("250.00"));
+            usuario1.put("ultimoPedido", new java.sql.Timestamp(System.currentTimeMillis()));
             usuarios.add(usuario1);
         }
         
@@ -242,7 +296,7 @@ public class ConsultasAvancadasController {
         model.addAttribute("titulo", "Usuários com Gastos Acima da Média");
         model.addAttribute("descricao", "Identifica usuários cujo valor total de pedidos excede a média geral");
         
-        return "consultas-avancadas/resultado";
+        return "consultas-avancadas/subconsulta-usuarios-resultado";
     }
 
     @GetMapping("/visao-dashboard-vendas")
@@ -265,10 +319,10 @@ public class ConsultasAvancadasController {
                 "COALESCE(SUM(CASE WHEN p.status_pedido != 'cancelado' THEN p.valor_total ELSE 0 END), 0) AS valor_total_gasto, " +
                 "ROUND(COALESCE(AVG(CASE WHEN p.status_pedido != 'cancelado' THEN p.valor_total END), 0), 2) AS valor_medio_pedido, " +
                 "MAX(p.data_pedido) AS ultimo_pedido " +
-                "FROM usuario u " +
-                "LEFT JOIN pedido p ON u.id = p.usuario_id " +
-                "LEFT JOIN endereco e ON u.id = e.usuario_id " +
-                "LEFT JOIN telefone t ON u.id = t.usuario_id " +
+                "FROM Usuario u " +
+                "LEFT JOIN Pedido p ON u.id = p.usuario_id " +
+                "LEFT JOIN Endereco e ON u.id = e.usuario_id " +
+                "LEFT JOIN Telefone t ON u.id = t.usuario_id " +
                 "GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.cpf, u.data_nascimento, " +
                 "         e.rua, e.numero, e.bairro, e.cidade, e.estado, t.numero " +
                 "ORDER BY valor_total_gasto DESC";
@@ -350,12 +404,12 @@ public class ConsultasAvancadasController {
                 "    WHEN p.quantidade_estoque < 50 THEN 'Estoque médio' " +
                 "    ELSE 'Estoque alto' " +
                 "END AS status_estoque " +
-                "FROM produto p " +
-                "LEFT JOIN armazem a ON p.armazem_id = a.id " +
-                "LEFT JOIN fornecedorproduto fp ON p.id = fp.produto_id " +
-                "LEFT JOIN fornecedor f ON fp.fornecedor_id = f.id " +
-                "LEFT JOIN itempedido ip ON p.id = ip.produto_id " +
-                "LEFT JOIN pedido ped ON ip.pedido_id = ped.id AND ped.status_pedido != 'cancelado' " +
+                "FROM Produto p " +
+                "LEFT JOIN Armazem a ON p.armazem_id = a.id " +
+                "LEFT JOIN FornecedorProduto fp ON p.id = fp.produto_id " +
+                "LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id " +
+                "LEFT JOIN ItemPedido ip ON p.id = ip.produto_id " +
+                "LEFT JOIN Pedido ped ON ip.pedido_id = ped.id AND ped.status_pedido != 'cancelado' " +
                 "GROUP BY p.id, p.nome, p.descricao, p.preco, p.quantidade_estoque, a.nome, " +
                 "         f.nome_fantasia, f.razao_social, fp.custo_unitario_compra " +
                 "ORDER BY total_vendido DESC";

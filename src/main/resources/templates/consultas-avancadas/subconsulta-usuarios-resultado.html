@@ -81,9 +81,13 @@
                                                     <th>ID</th>
                                                     <th>Nome Completo</th>
                                                     <th>Email</th>
+                                                    <th>CPF</th>
                                                     <th>Idade</th>
-                                                    <th>Data de Nascimento</th>
-                                                    <th>Status</th>
+                                                    <th>Total Pedidos</th>
+                                                    <th>Valor Total Gasto</th>
+                                                    <th>Valor Médio por Pedido</th>
+                                                    <th>Média Geral Pedidos</th>
+                                                    <th>Último Pedido</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -91,9 +95,13 @@
                                                     <td th:text="${usuario.id}">1</td>
                                                     <td th:text="${usuario.nomeCompleto}">João Silva</td>
                                                     <td th:text="${usuario.email}">joao@email.com</td>
+                                                    <td th:text="${usuario.cpf}">123.456.789-00</td>
                                                     <td th:text="${usuario.idade}">25</td>
-                                                    <td th:text="${usuario.dataNascimento != null ? #dates.format(usuario.dataNascimento, 'dd/MM/yyyy') : 'N/A'}">01/01/2000</td>
-                                                    <td th:text="${usuario.statusCompra != null ? usuario.statusCompra : 'N/A'}">Nunca fez pedidos</td>
+                                                    <td th:text="${usuario.totalPedidos}">5</td>
+                                                    <td th:text="${#numbers.formatDecimal(usuario.valorTotalGasto, 1, 2)}">R$ 1.500,00</td>
+                                                    <td th:text="${#numbers.formatDecimal(usuario.valorMedioPorPedido, 1, 2)}">R$ 300,00</td>
+                                                    <td th:text="${#numbers.formatDecimal(usuario.mediaGeralPedidos, 1, 2)}">R$ 250,00</td>
+                                                    <td th:text="${usuario.ultimoPedido != null ? #dates.format(usuario.ultimoPedido, 'dd/MM/yyyy HH:mm') : 'N/A'}">28/10/2025 19:30</td>
                                                 </tr>
                                             </tbody>
                                         </table>

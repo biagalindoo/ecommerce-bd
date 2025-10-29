@@ -1,15 +1,7 @@
--- =====================================================
--- ETAPA 04 - CONSULTAS AVANÇADAS, VISÕES E ÍNDICES
--- =====================================================
-
--- =====================================================
--- ÍNDICES
--- =====================================================
-
--- Índice 1: Para otimizar consultas por data de nascimento (usado em análises de idade)
+--Índice 1: Para otimizar consultas por data de nascimento (usado em análises de idade)
 CREATE INDEX idx_usuario_data_nascimento ON Usuario(data_nascimento);
 
--- Índice 2: Para otimizar consultas por preço de produto (usado em análises de preço)
+--Índice 2: Para otimizar consultas por preço de produto (usado em análises de preço)
 CREATE INDEX idx_produto_preco ON Produto(preco);
 
 -- Índice 3: Para otimizar consultas por status de pedido (usado em análises de vendas)
@@ -18,12 +10,6 @@ CREATE INDEX idx_pedido_status ON Pedido(status_pedido);
 -- Índice 4: Para otimizar consultas por data de pedido (usado em análises temporais)
 CREATE INDEX idx_pedido_data ON Pedido(data_pedido);
 
--- =====================================================
--- CONSULTAS AVANÇADAS
--- =====================================================
-
--- CONSULTA 1: ANTI JOIN (LEFT JOIN) - Usuários que NUNCA fizeram pedidos
--- Descrição: Identifica usuários cadastrados que nunca realizaram compras
 SELECT 
     u.id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
@@ -36,8 +22,7 @@ LEFT JOIN Pedido p ON u.id = p.usuario_id
 WHERE p.id IS NULL
 ORDER BY u.data_nascimento DESC;
 
--- CONSULTA 2: FULL OUTER JOIN - Análise completa de produtos e fornecedores
--- Descrição: Mostra todos os produtos e todos os fornecedores, mesmo sem relacionamento
+
 SELECT 
     COALESCE(p.id, fp.produto_id) AS produto_id,
     COALESCE(p.nome, 'Produto não encontrado') AS nome_produto,
@@ -51,8 +36,7 @@ FULL OUTER JOIN FornecedorProduto fp ON p.id = fp.produto_id
 FULL OUTER JOIN Fornecedor f ON fp.fornecedor_id = f.id
 ORDER BY produto_id, fornecedor_id;
 
--- CONSULTA 3: SUBCONSULTA - Produtos com preço acima da média do seu armazém
--- Descrição: Identifica produtos que custam mais que a média dos produtos do mesmo armazém
+
 SELECT 
     p.id,
     p.nome,
@@ -72,8 +56,7 @@ WHERE p.preco > (SELECT AVG(p4.preco)
                  WHERE p4.armazem_id = p.armazem_id)
 ORDER BY diferenca_media DESC;
 
--- CONSULTA 4: SUBCONSULTA - Usuários que fizeram pedidos com valor total acima da média
--- Descrição: Identifica usuários cujo valor total de pedidos excede a média geral
+
 SELECT 
     u.id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
@@ -93,9 +76,6 @@ HAVING SUM(p.valor_total) > (SELECT AVG(p3.valor_total)
                              WHERE p3.status_pedido != 'cancelado')
 ORDER BY valor_total_gasto DESC;
 
--- =====================================================
--- VISÕES
--- =====================================================
 
 -- VISÃO 1: Dashboard de Vendas por Usuário
 -- Descrição: Visão consolidada com informações completas de vendas por usuário
@@ -160,9 +140,6 @@ LEFT JOIN Pedido ped ON ip.pedido_id = ped.id AND ped.status_pedido != 'cancelad
 GROUP BY p.id, p.nome, p.descricao, p.preco, p.quantidade_estoque, a.nome,
          f.nome_fantasia, f.razao_social, fp.custo_unitario_compra;
 
--- =====================================================
--- CONSULTAS DE TESTE DAS VISÕES
--- =====================================================
 
 -- Teste da Visão 1: Dashboard de Vendas por Usuário
 -- SELECT * FROM vw_dashboard_vendas_usuario ORDER BY valor_total_gasto DESC LIMIT 10;

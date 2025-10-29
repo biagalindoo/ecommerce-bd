@@ -1,10 +1,12 @@
 com\ecommerce\entity\Usuario.class
+com\ecommerce\controller\AnaliseController.class
 com\ecommerce\service\UsuarioService.class
 com\ecommerce\server\SimpleServer$StaticFileHandler.class
 com\ecommerce\controller\ConsultasController.class
 com\ecommerce\model\Usuario.class
 com\ecommerce\controller\ProdutoController.class
 com\ecommerce\controller\ImageController.class
+com\ecommerce\config\WebConfig.class
 com\ecommerce\entity\Produto.class
 com\ecommerce\entity\UsuarioCompleto.class
 com\ecommerce\database\DatabaseConnection.class
@@ -20,3 +22,4 @@ com\ecommerce\server\SimpleServer.class
 com\ecommerce\entity\AnalisePreco.class
 com\ecommerce\dao\ProdutoDAO.class
 com\ecommerce\controller\UsuarioController.class
+com\ecommerce\EcommerceDashboardApplication.class
