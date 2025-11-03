@@ -141,7 +141,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> produto1 = new HashMap<>();
             produto1.put("produtoId", 1);
             produto1.put("nomeProduto", "Smartphone Samsung Galaxy");
@@ -212,7 +211,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> produto1 = new HashMap<>();
             produto1.put("id", 1);
             produto1.put("nome", "Smartphone Samsung Galaxy");
@@ -277,7 +275,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> usuario1 = new HashMap<>();
             usuario1.put("id", 1);
             usuario1.put("nomeCompleto", "João Silva");
@@ -351,7 +348,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> item1 = new HashMap<>();
             item1.put("usuarioId", 1);
             item1.put("nomeCompleto", "João Silva");
@@ -440,7 +436,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> produto1 = new HashMap<>();
             produto1.put("produtoId", 1);
             produto1.put("nomeProduto", "Smartphone Samsung Galaxy");

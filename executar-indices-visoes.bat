@@ -2,10 +2,10 @@
 echo Executando scripts SQL para indices e visoes...
 echo.
 
-REM Caminho do MySQL
+REM
 set MYSQL_PATH="C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
 
-REM Verificar se o MySQL existe
+REM
 if not exist %MYSQL_PATH% (
     echo ERRO: MySQL nao encontrado em %MYSQL_PATH%
     echo Verifique se o MySQL esta instalado corretamente.

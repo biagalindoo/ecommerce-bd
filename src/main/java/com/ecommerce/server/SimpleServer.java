@@ -9,10 +9,6 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * Servidor web simples para testar a aplicação
- * Este é apenas um servidor de desenvolvimento
- */
 public class SimpleServer {
     
     private static final int PORT = 8080;

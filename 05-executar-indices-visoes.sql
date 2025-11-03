@@ -1,35 +1,10 @@
--- =====================================================
--- SCRIPT PARA EXECUTAR ÍNDICES E VISÕES
--- =====================================================
-
--- Executar este script após criar as tabelas e popular com dados
--- para criar os índices e visões necessários para as consultas avançadas
-
--- =====================================================
--- CRIAR ÍNDICES
--- =====================================================
-
--- Índice 1: Para otimizar consultas por data de nascimento (usado em análises de idade)
 CREATE INDEX IF NOT EXISTS idx_usuario_data_nascimento ON Usuario(data_nascimento);
-
--- Índice 2: Para otimizar consultas por preço de produto (usado em análises de preço)
 CREATE INDEX IF NOT EXISTS idx_produto_preco ON Produto(preco);
-
--- Índice 3: Para otimizar consultas por status de pedido (usado em análises de vendas)
 CREATE INDEX IF NOT EXISTS idx_pedido_status ON Pedido(status_pedido);
-
--- Índice 4: Para otimizar consultas por data de pedido (usado em análises temporais)
 CREATE INDEX IF NOT EXISTS idx_pedido_data ON Pedido(data_pedido);
 
--- =====================================================
--- CRIAR VISÕES
--- =====================================================
 
--- VISÃO 1: Dashboard de Vendas por Usuário
--- Descrição: Visão consolidada com informações completas de vendas por usuário
--- Justificativa: Permite análise rápida do desempenho de vendas por usuário,
--- incluindo dados pessoais, endereço, telefone e estatísticas de pedidos
-CREATE OR REPLACE VIEW vw_dashboard_vendas_usuario AS
+-- VISÃO 1
 SELECT 
     u.id AS usuario_id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
@@ -52,10 +27,7 @@ LEFT JOIN Telefone t ON u.id = t.usuario_id
 GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.cpf, u.data_nascimento, 
          e.rua, e.numero, e.bairro, e.cidade, e.estado, t.numero;
 
--- VISÃO 2: Análise Completa de Produtos e Fornecedores
--- Descrição: Visão detalhada com informações de produtos, fornecedores e performance de vendas
--- Justificativa: Permite análise completa do catálogo de produtos, incluindo
--- informações de fornecedores, estoque, vendas e margem de lucro
+-- VISÃO 2
 CREATE OR REPLACE VIEW vw_analise_produtos_fornecedores AS
 SELECT 
     p.id AS produto_id,
@@ -88,11 +60,8 @@ LEFT JOIN Pedido ped ON ip.pedido_id = ped.id AND ped.status_pedido != 'cancelad
 GROUP BY p.id, p.nome, p.descricao, p.preco, p.quantidade_estoque, a.nome,
          f.nome_fantasia, f.razao_social, fp.custo_unitario_compra;
 
--- =====================================================
--- VERIFICAR ÍNDICES CRIADOS
--- =====================================================
 
--- Consulta para verificar os índices criados
+
 SELECT 
     TABLE_NAME,
     INDEX_NAME,
@@ -103,11 +72,7 @@ WHERE TABLE_SCHEMA = DATABASE()
 AND INDEX_NAME LIKE 'idx_%'
 ORDER BY TABLE_NAME, INDEX_NAME;
 
--- =====================================================
--- VERIFICAR VISÕES CRIADAS
--- =====================================================
 
--- Consulta para verificar as visões criadas
 SELECT 
     TABLE_NAME,
     TABLE_TYPE,
@@ -118,12 +83,4 @@ AND TABLE_TYPE = 'VIEW'
 AND TABLE_NAME LIKE 'vw_%'
 ORDER BY TABLE_NAME;
 
--- =====================================================
--- TESTAR VISÕES
--- =====================================================
-
--- Teste da Visão 1: Dashboard de Vendas por Usuário
--- SELECT * FROM vw_dashboard_vendas_usuario ORDER BY valor_total_gasto DESC LIMIT 10;
-
--- Teste da Visão 2: Análise Completa de Produtos e Fornecedores
--- SELECT * FROM vw_analise_produtos_fornecedores WHERE status_estoque = 'Estoque baixo' ORDER BY total_vendido DESC;
+-- Teste visoes

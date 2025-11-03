@@ -1,13 +1,6 @@
---Índice 1: Para otimizar consultas por data de nascimento (usado em análises de idade)
 CREATE INDEX idx_usuario_data_nascimento ON Usuario(data_nascimento);
-
---Índice 2: Para otimizar consultas por preço de produto (usado em análises de preço)
 CREATE INDEX idx_produto_preco ON Produto(preco);
-
--- Índice 3: Para otimizar consultas por status de pedido (usado em análises de vendas)
 CREATE INDEX idx_pedido_status ON Pedido(status_pedido);
-
--- Índice 4: Para otimizar consultas por data de pedido (usado em análises temporais)
 CREATE INDEX idx_pedido_data ON Pedido(data_pedido);
 
 SELECT 
@@ -77,10 +70,6 @@ HAVING SUM(p.valor_total) > (SELECT AVG(p3.valor_total)
 ORDER BY valor_total_gasto DESC;
 
 
--- VISÃO 1: Dashboard de Vendas por Usuário
--- Descrição: Visão consolidada com informações completas de vendas por usuário
--- Justificativa: Permite análise rápida do desempenho de vendas por usuário,
--- incluindo dados pessoais, endereço, telefone e estatísticas de pedidos
 CREATE VIEW vw_dashboard_vendas_usuario AS
 SELECT 
     u.id AS usuario_id,
@@ -104,10 +93,8 @@ LEFT JOIN Telefone t ON u.id = t.usuario_id
 GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.cpf, u.data_nascimento, 
          e.rua, e.numero, e.bairro, e.cidade, e.estado, t.numero;
 
--- VISÃO 2: Análise Completa de Produtos e Fornecedores
--- Descrição: Visão detalhada com informações de produtos, fornecedores e performance de vendas
--- Justificativa: Permite análise completa do catálogo de produtos, incluindo
--- informações de fornecedores, estoque, vendas e margem de lucro
+
+
 CREATE VIEW vw_analise_produtos_fornecedores AS
 SELECT 
     p.id AS produto_id,
@@ -141,8 +128,3 @@ GROUP BY p.id, p.nome, p.descricao, p.preco, p.quantidade_estoque, a.nome,
          f.nome_fantasia, f.razao_social, fp.custo_unitario_compra;
 
 
--- Teste da Visão 1: Dashboard de Vendas por Usuário
--- SELECT * FROM vw_dashboard_vendas_usuario ORDER BY valor_total_gasto DESC LIMIT 10;
-
--- Teste da Visão 2: Análise Completa de Produtos e Fornecedores
--- SELECT * FROM vw_analise_produtos_fornecedores WHERE status_estoque = 'Estoque baixo' ORDER BY total_vendido DESC;
