@@ -1,3 +1,72 @@
+# ========= Java / Maven =========
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# Maven build helper files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Keep Maven Wrapper; do NOT ignore .mvn/wrapper/maven-wrapper.jar
+
+# ========= Spring / Logs =========
+*.log
+logs/
+spring.log
+
+# ========= IDEs / Editors =========
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+.factorypath
+bin/
+
+# VS Code
+.vscode/
+
+# Other editors
+*.swp
+*.swo
+*~
+~$*
+*.tmp
+*.temp
+
+# ========= OS files =========
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ========= Environment / Secrets (if used) =========
+.env
+.env.*
+!.env.example
+
+# ========= Build outputs (additional) =========
+out/
+
+# ========= Archives (project-specific) =========
+/apache-tomcat-*.zip
+
 # Arquivos de configuração com senhas
 .env
 database.env

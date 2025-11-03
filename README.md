@@ -16,6 +16,10 @@ Sistema de dashboard para e-commerce com operações CRUD usando **SQL puro** (s
    cd caminho/para/sua/pasta/ecommerce-dashboard
    ```
 
+# Branch principal utilizada: main
+git checkout main
+git pull origin main
+
 ##  **Pré-requisitos**
 
 Antes de começar, certifique-se de ter instalado:
