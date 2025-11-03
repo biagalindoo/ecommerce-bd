@@ -4,7 +4,6 @@ CREATE INDEX IF NOT EXISTS idx_pedido_status ON Pedido(status_pedido);
 CREATE INDEX IF NOT EXISTS idx_pedido_data ON Pedido(data_pedido);
 
 
--- VISÃO 1
 SELECT 
     u.id AS usuario_id,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
@@ -27,7 +26,6 @@ LEFT JOIN Telefone t ON u.id = t.usuario_id
 GROUP BY u.id, u.primeiro_nome, u.sobrenome, u.email, u.cpf, u.data_nascimento, 
          e.rua, e.numero, e.bairro, e.cidade, e.estado, t.numero;
 
--- VISÃO 2
 CREATE OR REPLACE VIEW vw_analise_produtos_fornecedores AS
 SELECT 
     p.id AS produto_id,
@@ -83,4 +81,3 @@ AND TABLE_TYPE = 'VIEW'
 AND TABLE_NAME LIKE 'vw_%'
 ORDER BY TABLE_NAME;
 
--- Teste visoes
