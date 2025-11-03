@@ -5,8 +5,11 @@ CREATE INDEX idx_pedido_data ON Pedido(data_pedido);
 
 SELECT 
     u.id,
+    u.primeiro_nome,
+    u.sobrenome,
     CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo,
     u.email,
+    u.cpf,
     u.data_nascimento,
     TIMESTAMPDIFF(YEAR, u.data_nascimento, CURDATE()) AS idade,
     'Nunca fez pedidos' AS status_compra
@@ -25,8 +28,20 @@ SELECT
     COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida,
     COALESCE(fp.custo_unitario_compra, 0) AS custo_compra
 FROM Produto p
-FULL OUTER JOIN FornecedorProduto fp ON p.id = fp.produto_id
-FULL OUTER JOIN Fornecedor f ON fp.fornecedor_id = f.id
+LEFT JOIN FornecedorProduto fp ON p.id = fp.produto_id
+LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id
+UNION
+SELECT 
+    COALESCE(p.id, fp.produto_id) AS produto_id,
+    COALESCE(p.nome, 'Produto não encontrado') AS nome_produto,
+    COALESCE(p.preco, 0) AS preco,
+    COALESCE(f.id, fp.fornecedor_id) AS fornecedor_id,
+    COALESCE(f.nome_fantasia, 'Fornecedor não encontrado') AS nome_fornecedor,
+    COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida,
+    COALESCE(fp.custo_unitario_compra, 0) AS custo_compra
+FROM Produto p
+RIGHT JOIN FornecedorProduto fp ON p.id = fp.produto_id
+RIGHT JOIN Fornecedor f ON fp.fornecedor_id = f.id
 ORDER BY produto_id, fornecedor_id;
 
 

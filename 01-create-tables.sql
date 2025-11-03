@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Telefone (
 
 
 CREATE TABLE IF NOT EXISTS Endereco (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT,
     cep CHAR(8) NOT NULL,
     rua VARCHAR(100) NOT NULL,
     numero VARCHAR(10) NOT NULL,
@@ -28,16 +28,8 @@ CREATE TABLE IF NOT EXISTS Endereco (
     cidade VARCHAR(50) NOT NULL,
     estado CHAR(2) NOT NULL,
     pais VARCHAR(50) DEFAULT 'Brasil',
-    usuario_id INT,
-    FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS Carrinho (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    ultima_modificacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    usuario_id INT UNIQUE,
+    usuario_id INT NOT NULL,
+    PRIMARY KEY (usuario_id, id),
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -58,18 +50,6 @@ CREATE TABLE IF NOT EXISTS Produto (
         ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ItemCarrinho (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    quantidade INT CHECK (quantidade > 0),
-    preco_unitario_momento DECIMAL(10,2) NOT NULL,
-    carrinho_id INT NOT NULL,
-    produto_id INT NOT NULL,
-    FOREIGN KEY (carrinho_id) REFERENCES Carrinho(id)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (produto_id) REFERENCES Produto(id)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS Pedido (
     id INT AUTO_INCREMENT PRIMARY KEY,
     data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -83,13 +63,13 @@ CREATE TABLE IF NOT EXISTS Pedido (
 );
 
 CREATE TABLE IF NOT EXISTS ItemPedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    produto_id INT NOT NULL,
     quantidade INT CHECK (quantidade > 0),
     preco_unitario DECIMAL(10,2) NOT NULL,
     desconto DECIMAL(10,2) DEFAULT 0,
     subtotal DECIMAL(10,2) GENERATED ALWAYS AS ((quantidade * preco_unitario) - desconto) STORED,
-    pedido_id INT NOT NULL,
-    produto_id INT NOT NULL,
+    PRIMARY KEY (pedido_id, produto_id),
     FOREIGN KEY (pedido_id) REFERENCES Pedido(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (produto_id) REFERENCES Produto(id)
