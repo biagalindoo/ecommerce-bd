@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Pedidos - E-commerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="/ecommerce-dashboard/" class="btn btn-secondary">Voltar</a>
+        <h2>Pedidos (Total: <span th:text="${totalPedidos}">0</span>)</h2>
+        <a href="/ecommerce-dashboard/pedidos/novo" class="btn btn-success">Novo Pedido</a>
+    </div>
+
+    <form method="get" action="/ecommerce-dashboard/pedidos" class="mb-3">
+        <div class="row g-2">
+            <div class="col-md-4">
+                <select class="form-select" name="status">
+                    <option value="">Todos os status</option>
+                    <option value="aberto">aberto</option>
+                    <option value="pago">pago</option>
+                    <option value="enviado">enviado</option>
+                    <option value="cancelado">cancelado</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" type="submit">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Status</th>
+                <th>Valor Total</th>
+                <th>Usuário</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${pedidos}">
+                <td th:text="${p.id}">1</td>
+                <td th:text="${p.dataPedido}">2025-01-01</td>
+                <td th:text="${p.horaPedido}">12:00</td>
+                <td th:text="${p.statusPedido}">aberto</td>
+                <td th:text="${#numbers.formatDecimal(p.valorTotal,1,2)}">0.00</td>
+                <td th:text="${p.usuarioId}">1</td>
+                <td>
+                    <a th:href="@{/pedidos/editar/{id}(id=${p.id})}" class="btn btn-warning btn-sm">Editar</a>
+                    <a th:href="@{/pedidos/excluir/{id}(id=${p.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Excluir pedido?')">Excluir</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
