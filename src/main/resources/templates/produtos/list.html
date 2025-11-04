@@ -113,6 +113,9 @@
                                             <a th:href="@{/produtos/editar/{id}(id=${produto.id})}" class="btn btn-warning btn-sm btn-action">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
+                                            <a th:href="@{/produtos/{id}/fornecedores(id=${produto.id})}" class="btn btn-info btn-sm btn-action">
+                                                <i class="fas fa-truck"></i> Fornecedores
+                                            </a>
                                             <a th:href="@{/produtos/excluir/{id}(id=${produto.id})}" 
                                                class="btn btn-danger btn-sm btn-action"
                                                onclick="return confirm('Tem certeza que deseja excluir este produto?')">

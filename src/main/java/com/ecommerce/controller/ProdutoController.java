@@ -2,6 +2,8 @@ package com.ecommerce.controller;
 
 import com.ecommerce.entity.Produto;
 import com.ecommerce.service.ProdutoService;
+import com.ecommerce.service.FornecedorProdutoService;
+import com.ecommerce.service.FornecedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,12 @@ public class ProdutoController {
     
     @Autowired
     private ProdutoService produtoService;
+    
+    @Autowired
+    private FornecedorProdutoService fornecedorProdutoService;
+    
+    @Autowired
+    private FornecedorService fornecedorService;
     
     /**
      * Lista todos os produtos
@@ -46,6 +54,44 @@ public class ProdutoController {
     public String novoProduto(Model model) {
         model.addAttribute("produto", new Produto());
         return "produtos/form";
+    }
+
+    /**
+     * Gerenciar fornecedores vinculados a um produto
+     */
+    @GetMapping("/{id}/fornecedores")
+    public String listarFornecedoresDoProduto(@PathVariable Integer id, Model model) {
+        Produto produto = produtoService.buscarPorId(id).orElse(null);
+        if (produto == null) { return "redirect:/produtos"; }
+        model.addAttribute("produto", produto);
+        model.addAttribute("vinculos", fornecedorProdutoService.listarPorProduto(id));
+        // lista de fornecedores para facilitar vínculo (simples)
+        model.addAttribute("fornecedores", fornecedorService.listarTodos());
+        return "produtos/fornecedores";
+    }
+
+    @PostMapping("/{id}/fornecedores")
+    public String vincularFornecedor(@PathVariable Integer id,
+                                     @RequestParam Integer fornecedorId,
+                                     @RequestParam(required = false) Integer quantidadeFornecida,
+                                     @RequestParam(required = false) java.math.BigDecimal custoUnitarioCompra) {
+        try {
+            fornecedorProdutoService.vincular(fornecedorId, id, quantidadeFornecida, custoUnitarioCompra);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/produtos/" + id + "/fornecedores";
+    }
+
+    @GetMapping("/{id}/fornecedores/remover")
+    public String desvincularFornecedor(@PathVariable Integer id,
+                                        @RequestParam Integer fornecedorId) {
+        try {
+            fornecedorProdutoService.desvincular(fornecedorId, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/produtos/" + id + "/fornecedores";
     }
     
     /**
