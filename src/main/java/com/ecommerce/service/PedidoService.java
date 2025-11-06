@@ -20,6 +20,10 @@ public class PedidoService {
     public Pedido atualizar(Pedido p) { return pedidoDAO.atualizar(p); }
     public void excluir(Integer id) { pedidoDAO.excluir(id); }
     public List<Pedido> buscarPorStatus(String status) { return pedidoDAO.buscarPorStatus(status); }
+
+    public void atualizarStatusViaProcedure(Integer pedidoId, String novoStatus) {
+        pedidoDAO.atualizarStatusViaProcedure(pedidoId, novoStatus);
+    }
 }
 
 

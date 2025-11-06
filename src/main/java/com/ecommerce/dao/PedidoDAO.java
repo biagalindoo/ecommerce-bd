@@ -115,6 +115,21 @@ public class PedidoDAO {
         }
     }
     
+    /**
+     * Chama procedure para atualizar status do pedido com validação
+     */
+    public void atualizarStatusViaProcedure(Integer pedidoId, String novoStatus) {
+        String call = "CALL sp_atualizar_status_pedido(?, ?)";
+        try (Connection conn = databaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(call)) {
+            stmt.setInt(1, pedidoId);
+            stmt.setString(2, novoStatus);
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao chamar sp_atualizar_status_pedido", e);
+        }
+    }
+
     private Pedido mapear(ResultSet rs) throws SQLException {
         Pedido p = new Pedido();
         p.setId(rs.getInt("id"));

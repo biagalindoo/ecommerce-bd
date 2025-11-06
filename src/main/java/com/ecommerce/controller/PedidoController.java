@@ -44,6 +44,16 @@ public class PedidoController {
         }
         return "redirect:/pedidos";
     }
+
+    @PostMapping("/status/{id}")
+    public String atualizarStatus(@PathVariable Integer id, @RequestParam("status") String novoStatus) {
+        try {
+            pedidoService.atualizarStatusViaProcedure(id, novoStatus);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/pedidos";
+    }
     
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Integer id, Model model) {
