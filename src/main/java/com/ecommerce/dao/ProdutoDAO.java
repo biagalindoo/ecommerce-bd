@@ -259,26 +259,6 @@ public class ProdutoDAO {
         
         return 0;
     }
-    
-    /**
-     * Lista IDs de produtos com estoque baixo usando função SQL fn_produto_estoque_baixo
-     */
-    public List<Integer> listarIdsEstoqueBaixo(int limiteMinimo) {
-        List<Integer> ids = new ArrayList<>();
-        String sql = "SELECT id FROM Produto WHERE fn_produto_estoque_baixo(id, ?) = 1";
-        try (Connection conn = databaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, limiteMinimo);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ids.add(rs.getInt(1));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ids;
-    }
 
     
     /**

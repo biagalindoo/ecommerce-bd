@@ -24,6 +24,10 @@ public class PedidoService {
     public void atualizarStatusViaProcedure(Integer pedidoId, String novoStatus) {
         pedidoDAO.atualizarStatusViaProcedure(pedidoId, novoStatus);
     }
+    
+    public java.math.BigDecimal calcularDescontoPorValor(java.math.BigDecimal valorTotal) {
+        return pedidoDAO.calcularDescontoPorValor(valorTotal);
+    }
 }
 
 

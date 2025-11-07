@@ -43,8 +43,6 @@ public class ProdutoController {
         }
         
         model.addAttribute("produtos", produtos);
-        // Usa função SQL fn_produto_estoque_baixo para destacar produtos críticos (ex.: limite 10)
-        model.addAttribute("idsEstoqueBaixo", produtoService.listarIdsEstoqueBaixo(10));
         model.addAttribute("totalProdutos", produtos.size());
         return "produtos/list";
     }

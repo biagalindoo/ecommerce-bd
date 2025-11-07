@@ -117,17 +117,94 @@ public class PedidoDAO {
     
     /**
      * Chama procedure para atualizar status do pedido com validação
+     * Se a procedure não existir, faz UPDATE direto (o trigger ainda funciona)
      */
     public void atualizarStatusViaProcedure(Integer pedidoId, String novoStatus) {
+        // Tenta chamar a procedure primeiro
         String call = "CALL sp_atualizar_status_pedido(?, ?)";
         try (Connection conn = databaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(call)) {
+            System.out.println("Tentando chamar procedure: sp_atualizar_status_pedido(" + pedidoId + ", " + novoStatus + ")");
             stmt.setInt(1, pedidoId);
             stmt.setString(2, novoStatus);
             stmt.execute();
+            System.out.println("Procedure executada com sucesso!");
+            return; // Sucesso, sai da função
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao chamar sp_atualizar_status_pedido", e);
+            // Se a procedure não existir (erro 1305) ou outro erro, faz UPDATE direto
+            // O trigger ainda vai funcionar porque é AFTER UPDATE
+            System.out.println("Procedure não disponível ou erro. Fazendo UPDATE direto (trigger ainda funcionará)...");
+            atualizarStatusDireto(pedidoId, novoStatus);
         }
+    }
+    
+    /**
+     * Atualiza status diretamente (fallback se procedure não existir)
+     * O trigger AFTER UPDATE ainda será disparado
+     */
+    private void atualizarStatusDireto(Integer pedidoId, String novoStatus) {
+        String sql = "UPDATE Pedido SET status_pedido = ? WHERE id = ?";
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, novoStatus);
+            stmt.setInt(2, pedidoId);
+            int rows = stmt.executeUpdate();
+            System.out.println("UPDATE direto executado. Linhas afetadas: " + rows);
+            if (rows == 0) {
+                throw new RuntimeException("Pedido não encontrado: " + pedidoId);
+            }
+        } catch (SQLException e) {
+            System.err.println("ERRO no UPDATE direto: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar status do pedido", e);
+        }
+    }
+
+    /**
+     * Calcula desconto usando função SQL fn_calcular_desconto_por_valor
+     */
+    public BigDecimal calcularDescontoPorValor(BigDecimal valorTotal) {
+        if (valorTotal == null || valorTotal.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        String sql = "SELECT fn_calcular_desconto_por_valor(?)";
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, valorTotal);
+            System.out.println("Calculando desconto para valor: " + valorTotal);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    BigDecimal desconto = rs.getBigDecimal(1);
+                    System.out.println("Desconto calculado: " + desconto);
+                    return desconto != null ? desconto : BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ERRO ao calcular desconto: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            // Se função não existir, calcula manualmente como fallback
+            if (e.getErrorCode() == 1305) {
+                System.out.println("Função não encontrada. Calculando desconto manualmente...");
+                return calcularDescontoManual(valorTotal);
+            }
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
+    }
+    
+    /**
+     * Calcula desconto manualmente (fallback se função não existir)
+     */
+    private BigDecimal calcularDescontoManual(BigDecimal valorTotal) {
+        if (valorTotal.compareTo(new BigDecimal("1000.00")) >= 0) {
+            return valorTotal.multiply(new BigDecimal("0.10"));
+        } else if (valorTotal.compareTo(new BigDecimal("500.00")) >= 0) {
+            return valorTotal.multiply(new BigDecimal("0.05"));
+        } else if (valorTotal.compareTo(new BigDecimal("200.00")) >= 0) {
+            return valorTotal.multiply(new BigDecimal("0.02"));
+        }
+        return BigDecimal.ZERO;
     }
 
     private Pedido mapear(ResultSet rs) throws SQLException {

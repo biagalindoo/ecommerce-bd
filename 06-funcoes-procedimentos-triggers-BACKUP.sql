@@ -1,4 +1,3 @@
--- CRIAÇÃO DA TABELA DE LOGS
 CREATE TABLE IF NOT EXISTS Log_Auditoria (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tabela VARCHAR(100) NOT NULL,
@@ -12,10 +11,6 @@ CREATE TABLE IF NOT EXISTS Log_Auditoria (
 -- FUNÇÕES
 
 DELIMITER $$
-
--- Função 1 (com condicional): calcula desconto baseado no valor total do pedido
--- Uso semântico: aplica regras de desconto progressivo conforme valor do pedido
--- Regra de negócio: pedidos maiores têm desconto maior
 CREATE FUNCTION fn_calcular_desconto_por_valor(
     p_valor_total DECIMAL(10,2)
 ) RETURNS DECIMAL(10,2)
@@ -38,8 +33,7 @@ BEGIN
     RETURN ROUND(v_desconto, 2);
 END$$
 
--- Função 2: verifica se produto está com estoque baixo (precisa reposição)
--- Uso semântico: alerta para gestão de estoque e recompra de produtos
+
 CREATE FUNCTION fn_produto_estoque_baixo(
     p_produto_id INT,
     p_limite_minimo INT
@@ -85,12 +79,6 @@ BEGIN
     IF v_atual IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pedido não encontrado';
     END IF;
-
-    -- Regras simples de transição
-    -- aberto -> pago | cancelado
-    -- pago -> enviado | cancelado
-    -- enviado -> (sem mudanças, exceto cancelado não permitido)
-    -- cancelado -> (não muda)
     IF v_atual = 'aberto' AND (p_novo_status IN ('pago','cancelado')) THEN
         SET v_permitido = 1;
     ELSEIF v_atual = 'pago' AND (p_novo_status IN ('enviado','cancelado')) THEN
@@ -110,11 +98,7 @@ BEGIN
     WHERE id = p_pedido_id;
 END$$
 
--- Procedure 2 (usa CURSOR): processa pagamento confirmado e baixa estoque item-a-item
--- Justificativa do cursor: precisa iterar ItemPedido, validar estoque por item, aplicar regras específicas
--- (ex: produtos com estoque crítico, produtos com preço diferente, calcular margem por item)
--- Não pode ser feito com UPDATE simples porque precisa: 1) validar cada item antes de baixar,
--- 2) aplicar lógica condicional por produto, 3) registrar problemas específicos por item no log
+
 CREATE PROCEDURE sp_processar_pagamento_baixar_estoque(
     IN p_pedido_id INT
 )
@@ -139,7 +123,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pedido não encontrado ou não está com status pago';
     END IF;
 
-    -- Processa cada item individualmente usando cursor
     OPEN cur_itens;
     itens_loop: LOOP
         FETCH cur_itens INTO v_produto_id, v_quantidade, v_preco_unit;
@@ -149,32 +132,29 @@ BEGIN
 
         SET v_itens_processados = v_itens_processados + 1;
 
-        -- Obtém estoque e preço atual do produto
         SELECT quantidade_estoque, preco INTO v_estoque_atual, v_preco_produto
         FROM Produto
         WHERE id = v_produto_id;
 
-        -- Validações específicas por item
         IF v_estoque_atual IS NULL THEN
-            -- Produto não existe
+           
             SET v_itens_com_problema = v_itens_com_problema + 1;
             INSERT INTO Log_Auditoria(tabela, operacao, registro_id, detalhes)
             VALUES ('Pedido', 'ERRO', p_pedido_id, 
                    CONCAT('Produto ', v_produto_id, ' não encontrado no estoque'));
         ELSEIF v_estoque_atual < v_quantidade THEN
-            -- Estoque insuficiente para este item específico
+            
             SET v_itens_com_problema = v_itens_com_problema + 1;
             INSERT INTO Log_Auditoria(tabela, operacao, registro_id, detalhes)
             VALUES ('Pedido', 'ERRO', p_pedido_id, 
                    CONCAT('Estoque insuficiente. Produto ', v_produto_id, 
                           ': necessário ', v_quantidade, ', disponível ', v_estoque_atual));
         ELSE
-            -- Estoque OK - baixa e registra se preço mudou
+            
             UPDATE Produto
             SET quantidade_estoque = quantidade_estoque - v_quantidade
             WHERE id = v_produto_id;
 
-            -- Verifica se preço mudou desde o pedido (regra de negócio)
             IF v_preco_produto <> v_preco_unit THEN
                 INSERT INTO Log_Auditoria(tabela, operacao, registro_id, detalhes)
                 VALUES ('Pedido', 'AVISO', p_pedido_id, 
@@ -185,7 +165,6 @@ BEGIN
     END LOOP;
     CLOSE cur_itens;
 
-    -- Registra resultado final
     INSERT INTO Log_Auditoria(tabela, operacao, registro_id, detalhes)
     VALUES ('Pedido', 'PROCESSADO', p_pedido_id, 
            CONCAT('Processamento concluído. Itens processados: ', v_itens_processados,
@@ -216,20 +195,17 @@ BEGIN
     END IF;
 END$$
 
--- Trigger 2 (regra de domínio): valida e atualiza automaticamente valor_total do Pedido quando ItemPedido é inserido
--- Mantém integridade derivada: valor_total sempre reflete a soma dos subtotais dos itens
+
 CREATE TRIGGER tr_itempedido_after_insert_atualiza_pedido
 AFTER INSERT ON ItemPedido
 FOR EACH ROW
 BEGIN
     DECLARE v_novo_total DECIMAL(10,2);
     
-    -- Recalcula valor_total somando todos os subtotais do pedido
     SELECT COALESCE(SUM(subtotal), 0.00) INTO v_novo_total
     FROM ItemPedido
     WHERE pedido_id = NEW.pedido_id;
     
-    -- Atualiza o valor_total do pedido automaticamente
     UPDATE Pedido
     SET valor_total = v_novo_total
     WHERE id = NEW.pedido_id;

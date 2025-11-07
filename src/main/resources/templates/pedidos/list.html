@@ -55,14 +55,17 @@
                 <td>
                     <a th:href="@{/pedidos/editar/{id}(id=${p.id})}" class="btn btn-warning btn-sm">Editar</a>
                     <a th:href="@{/pedidos/excluir/{id}(id=${p.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Excluir pedido?')">Excluir</a>
-                    <form th:action="@{/pedidos/status/{id}(id=${p.id})}" method="post" class="d-inline ms-2">
-                        <select name="status" class="form-select form-select-sm d-inline w-auto">
+                    <form th:action="@{/pedidos/status/{id}(id=${p.id})}" method="post" class="d-inline ms-2" onsubmit="return false;">
+                        <select name="status" class="form-select form-select-sm d-inline w-auto" th:id="${'statusSel_' + p.id}">
                             <option value="aberto" th:selected="${p.statusPedido == 'aberto'}">aberto</option>
                             <option value="pago" th:selected="${p.statusPedido == 'pago'}">pago</option>
                             <option value="enviado" th:selected="${p.statusPedido == 'enviado'}">enviado</option>
                             <option value="cancelado" th:selected="${p.statusPedido == 'cancelado'}">cancelado</option>
                         </select>
-                        <button type="submit" class="btn btn-primary btn-sm">Atualizar Status</button>
+                        <button type="button" class="btn btn-primary btn-sm"
+                                th:onclick="|window.location.href='@{/pedidos/status/{id}(id=${p.id})}?status=' + document.getElementById('statusSel_' + ${p.id}).value|">
+                            Atualizar Status
+                        </button>
                     </form>
                 </td>
             </tr>

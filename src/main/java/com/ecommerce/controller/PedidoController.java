@@ -32,6 +32,16 @@ public class PedidoController {
         return "pedidos/form";
     }
     
+    @GetMapping("/calcular-desconto")
+    @ResponseBody
+    public java.util.Map<String, Object> calcularDesconto(@RequestParam("valor") java.math.BigDecimal valor) {
+        java.math.BigDecimal desconto = pedidoService.calcularDescontoPorValor(valor);
+        java.util.Map<String, Object> resultado = new java.util.HashMap<>();
+        resultado.put("desconto", desconto);
+        resultado.put("valorFinal", valor.subtract(desconto));
+        return resultado;
+    }
+    
     @PostMapping("/novo")
     public String salvar(@ModelAttribute Pedido pedido) {
         try {
@@ -45,12 +55,16 @@ public class PedidoController {
         return "redirect:/pedidos";
     }
 
-    @PostMapping("/status/{id}")
-    public String atualizarStatus(@PathVariable Integer id, @RequestParam("status") String novoStatus) {
+    @RequestMapping(value = "/status/{id}", method = {RequestMethod.POST, RequestMethod.GET})
+    public String atualizarStatus(@PathVariable Integer id, @RequestParam("status") String novoStatus, Model model) {
         try {
+            System.out.println("Controller: Atualizando status do pedido " + id + " para " + novoStatus);
             pedidoService.atualizarStatusViaProcedure(id, novoStatus);
+            System.out.println("Controller: Status atualizado com sucesso");
         } catch (Exception e) {
+            System.err.println("Controller: ERRO ao atualizar status: " + e.getMessage());
             e.printStackTrace();
+            model.addAttribute("erro", "Erro ao atualizar status: " + e.getMessage());
         }
         return "redirect:/pedidos";
     }

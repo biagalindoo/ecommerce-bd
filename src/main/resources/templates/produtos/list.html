@@ -103,7 +103,6 @@
                                             <span class="badge" 
                                                   th:classappend="${produto.quantidadeEstoque == 0} ? 'bg-danger' : (${produto.quantidadeEstoque < 10} ? 'bg-warning' : 'bg-success')"
                                                   th:text="${produto.quantidadeEstoque}">0</span>
-                                            <span class="badge bg-dark ms-1" th:if="${idsEstoqueBaixo != null and idsEstoqueBaixo.contains(produto.id)}">Fn: Baixo</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-danger" th:if="${produto.quantidadeEstoque == 0}">Esgotado</span>

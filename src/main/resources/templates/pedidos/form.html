@@ -36,9 +36,35 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Valor Total</label>
-                        <input type="number" step="0.01" class="form-control" name="valorTotal" th:value="${pedido?.valorTotal}">
+                        <label class="form-label">Valor Original</label>
+                        <input type="number" step="0.01" class="form-control" id="valorOriginal" 
+                               placeholder="Digite o valor original do pedido" oninput="calcularDesconto()">
+                        <small class="text-muted">Digite o valor para calcular desconto automático</small>
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Valor Total (com desconto aplicado)</label>
+                        <input type="number" step="0.01" class="form-control" id="valorTotal" name="valorTotal" 
+                               th:value="${pedido?.valorTotal}" readonly style="background-color: #e9ecef;">
+                        <small class="text-muted">Valor final após desconto (calculado automaticamente)</small>
+                    </div>
+                </div>
+                
+                <!-- Mostra desconto calculado pela função SQL -->
+                <div class="row mb-3" id="descontoInfo" style="display: none;">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <strong><i class="fas fa-percent me-2"></i>Desconto Aplicado (Função SQL):</strong>
+                            <span id="descontoValor">R$ 0,00</span>
+                            <br>
+                            <strong>Valor Original:</strong>
+                            <span id="valorOriginalDisplay">R$ 0,00</span>
+                            <strong class="ms-3">Valor Final:</strong>
+                            <span id="valorFinal">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Observação</label>
                         <input type="text" class="form-control" name="observacao" th:value="${pedido?.observacao}">
@@ -54,6 +80,57 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Inicializa quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    const valorTotal = document.getElementById('valorTotal').value;
+    if (valorTotal && parseFloat(valorTotal) > 0) {
+        // Se já tem valor (editando), preenche o valor original também
+        document.getElementById('valorOriginal').value = valorTotal;
+        calcularDesconto();
+    }
+});
+
+function calcularDesconto() {
+    const valorInput = document.getElementById('valorOriginal').value;
+    const valor = parseFloat(valorInput);
+    console.log('Valor digitado:', valorInput, 'Valor parseado:', valor);
+    
+    if (valor && valor > 0 && !isNaN(valor)) {
+        fetch('/ecommerce-dashboard/pedidos/calcular-desconto?valor=' + valor)
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+                const desconto = parseFloat(data.desconto) || 0;
+                const valorFinal = parseFloat(data.valorFinal) || valor;
+                
+                // Aplica o desconto automaticamente no campo valorTotal
+                document.getElementById('valorTotal').value = valorFinal.toFixed(2);
+                
+                // Mostra informações do desconto
+                document.getElementById('descontoInfo').style.display = 'block';
+                document.getElementById('descontoValor').textContent = 
+                    'R$ ' + desconto.toFixed(2).replace('.', ',');
+                document.getElementById('valorOriginalDisplay').textContent = 
+                    'R$ ' + valor.toFixed(2).replace('.', ',');
+                document.getElementById('valorFinal').textContent = 
+                    'R$ ' + valorFinal.toFixed(2).replace('.', ',');
+            })
+            .catch(error => {
+                console.error('Erro ao calcular desconto:', error);
+                document.getElementById('descontoInfo').style.display = 'none';
+                // Se der erro, usa o valor original
+                document.getElementById('valorTotal').value = valor.toFixed(2);
+            });
+    } else {
+        document.getElementById('descontoInfo').style.display = 'none';
+        document.getElementById('valorTotal').value = '';
+    }
+}
+</script>
 </body>
 </html>
 

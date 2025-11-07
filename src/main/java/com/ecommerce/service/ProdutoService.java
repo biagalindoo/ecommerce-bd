@@ -66,7 +66,4 @@ public class ProdutoService {
         return produtoDAO.listarProdutosComResponsaveis();
     }
 
-    public List<Integer> listarIdsEstoqueBaixo(int limiteMinimo) {
-        return produtoDAO.listarIdsEstoqueBaixo(limiteMinimo);
-    }
 }
