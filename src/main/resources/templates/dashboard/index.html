@@ -7,274 +7,108 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .stats-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        .stats-icon {
-            font-size: 2rem;
-            opacity: 0.8;
-        }
         body {
             background-color: #f8f9fa;
         }
         .card {
+            border-radius: 16px;
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .indicator-card {
+            background: white;
+            transition: transform 0.2s ease;
+        }
+        .indicator-card:hover {
+            transform: translateY(-4px);
+        }
+        .indicator-label {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        .indicator-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .chart-card {
+            min-height: 380px;
+        }
+        .filter-pill {
+            border-radius: 30px;
         }
         .btn-outline-secondary {
             background-color: white;
             color: #6c757d;
             border-color: #6c757d;
         }
-        .btn-outline-secondary:hover {
+        .btn-outline-secondary:hover, .btn-outline-secondary.active {
             background-color: #6c757d;
             color: white;
             border-color: #6c757d;
         }
+        .chart-placeholder {
+            min-height: 280px;
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h3 mb-0">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Dashboard E-commerce
-                    </h1>
-                    <div class="d-flex gap-2">
-                        <a href="/ecommerce-dashboard/usuarios" class="btn btn-outline-secondary">
-                            <i class="fas fa-users me-2"></i>Gerenciar Usuários
-                        </a>
-                        <a href="/ecommerce-dashboard/produtos" class="btn btn-outline-secondary">
-                            <i class="fas fa-box me-2"></i>Gerenciar Produtos
-                        </a>
-                        <a href="/ecommerce-dashboard/pedidos" class="btn btn-outline-secondary">
-                            <i class="fas fa-shopping-cart me-2"></i>Gerenciar Pedidos
-                        </a>
-                        <a href="/ecommerce-dashboard/fornecedores" class="btn btn-outline-secondary">
-                            <i class="fas fa-truck me-2"></i>Gerenciar Fornecedores
-                        </a>
-                        <a href="/ecommerce-dashboard/graficos" class="btn btn-outline-secondary">
-                            <i class="fas fa-chart-bar me-2"></i>Gráficos e Análises
-                        </a>
-                        <a href="/ecommerce-dashboard/consultas" class="btn btn-outline-secondary">
-                            <i class="fas fa-database me-2"></i>Consultas SQL
-                        </a>
-                        <a href="/ecommerce-dashboard/consultas-avancadas" class="btn btn-outline-secondary">
-                            <i class="fas fa-chart-bar me-2"></i>Consultas Avançadas
-                        </a>
-                        <a href="/ecommerce-dashboard/logs" class="btn btn-outline-secondary">
-                            <i class="fas fa-clipboard-list me-2"></i>Ver Logs
-                        </a>
-                    </div>
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3">
+                <h1 class="h3 mb-3 mb-lg-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Dashboard Estatístico Integrado
+                </h1>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/ecommerce-dashboard/usuarios" class="btn btn-outline-secondary">
+                        <i class="fas fa-users me-2"></i>Usuários
+                    </a>
+                    <a href="/ecommerce-dashboard/produtos" class="btn btn-outline-secondary">
+                        <i class="fas fa-box me-2"></i>Produtos
+                    </a>
+                    <a href="/ecommerce-dashboard/pedidos" class="btn btn-outline-secondary">
+                        <i class="fas fa-shopping-cart me-2"></i>Pedidos
+                    </a>
+                    <a href="/ecommerce-dashboard/fornecedores" class="btn btn-outline-secondary">
+                        <i class="fas fa-truck me-2"></i>Fornecedores
+                    </a>
+                    <a href="/ecommerce-dashboard/consultas" class="btn btn-outline-secondary">
+                        <i class="fas fa-database me-2"></i>Consultas SQL
+                    </a>
+                    <a href="/ecommerce-dashboard/consultas-avancadas" class="btn btn-outline-secondary">
+                        <i class="fas fa-chart-pie me-2"></i>Consultas Avançadas
+                    </a>
+                    <a href="/ecommerce-dashboard/logs" class="btn btn-outline-secondary">
+                        <i class="fas fa-clipboard-list me-2"></i>Logs
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <!-- Estatísticas Gerais -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card stats-card">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Total de Usuários</div>
-                            <div class="stats-number" th:text="${totalUsuarios}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
+            <div class="card p-3">
+                <div class="row gy-2 gx-3 align-items-center">
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Data inicial</label>
+                        <input type="date" class="form-control" id="filtroInicio">
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Total de Produtos</div>
-                            <div class="stats-number" th:text="${totalProdutos}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-box"></i>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Data final</label>
+                        <input type="date" class="form-control" id="filtroFim">
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Estoque Baixo</div>
-                            <div class="stats-number" th:text="${totalEstoqueBaixo}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Top produtos</label>
+                        <select class="form-select" id="filtroTopProdutos">
+                            <option value="5" selected>Top 5</option>
+                            <option value="10">Top 10</option>
+                            <option value="15">Top 15</option>
+                        </select>
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Produtos Esgotados</div>
-                            <div class="stats-number" th:text="${totalEsgotados}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Estatísticas de Usuários -->
-        <div class="row mb-4">
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Usuários com Pedidos</div>
-                            <div class="stats-number" th:text="${totalUsuariosComPedidos}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-6 col-md-6 mb-4">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="stats-label">Usuários sem Pedidos</div>
-                            <div class="stats-number" th:text="${totalUsuariosSemPedidos}">0</div>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-user-slash"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Produtos com Estoque Baixo -->
-        <div class="row mb-4" th:if="${totalEstoqueBaixo > 0}">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Produtos com Estoque Baixo
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Produto</th>
-                                        <th>Descrição</th>
-                                        <th>Estoque</th>
-                                        <th>Preço</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="produto : ${produtosEstoqueBaixo}">
-                                        <td th:text="${produto.nome}">Nome do Produto</td>
-                                        <td th:text="${produto.descricao}">Descrição</td>
-                                        <td>
-                                            <span class="badge bg-warning" th:text="${produto.quantidadeEstoque}">0</span>
-                                        </td>
-                                        <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 0,00</td>
-                                        <td>
-                                            <span class="badge bg-warning" th:if="${produto.quantidadeEstoque < 10 and produto.quantidadeEstoque > 0}">Estoque Baixo</span>
-                                            <span class="badge bg-danger" th:if="${produto.quantidadeEstoque == 0}">Esgotado</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Produtos Mais Vendidos -->
-        <div class="row mb-4" th:if="${produtosMaisVendidos != null and !produtosMaisVendidos.empty}">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-line me-2"></i>
-                            Produtos Mais Vendidos
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Produto</th>
-                                        <th>Descrição</th>
-                                        <th>Preço</th>
-                                        <th>Estoque</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="produto : ${produtosMaisVendidos}">
-                                        <td th:text="${produto.nome}">Nome do Produto</td>
-                                        <td th:text="${produto.descricao}">Descrição</td>
-                                        <td th:text="${#numbers.formatDecimal(produto.preco, 1, 2)}">R$ 0,00</td>
-                                        <td>
-                                            <span class="badge bg-success" th:text="${produto.quantidadeEstoque}">0</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Valor Total do Estoque -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-dollar-sign me-2"></i>
-                            Valor Total do Estoque
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center">
-                            <h2 class="text-success">
-                                <i class="fas fa-coins me-2"></i>
-                                <span th:text="${#numbers.formatDecimal(valorTotalEstoque, 1, 2)}">R$ 0,00</span>
-                            </h2>
+                    <div class="col-md-3 d-flex align-items-end justify-content-md-end">
+                        <div class="d-flex gap-2 w-100 justify-content-end">
+                            <button class="btn btn-outline-secondary btn-quick-range" data-range="30" id="btnUltimos30">Últimos 30 dias</button>
+                            <button class="btn btn-outline-secondary btn-quick-range" data-range="90" id="btnUltimos90">Últimos 90 dias</button>
+                            <button class="btn btn-primary" id="btnAplicarFiltros">
+                                <i class="fas fa-sync-alt me-2"></i>Aplicar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -282,6 +116,433 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Indicadores -->
+    <div class="row g-3 mb-4" id="cardsIndicadores">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Total de usuários</div>
+                <div class="indicator-value" id="indicadorUsuarios">0</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Total de produtos</div>
+                <div class="indicator-value" id="indicadorProdutos">0</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Total de pedidos</div>
+                <div class="indicator-value" id="indicadorPedidos">0</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Pedidos no período</div>
+                <div class="indicator-value" id="indicadorPedidosPeriodo">0</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Receita no período</div>
+                <div class="indicator-value text-success" id="indicadorReceita">R$ 0,00</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Ticket médio</div>
+                <div class="indicator-value text-primary" id="indicadorTicketMedio">R$ 0,00</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Fornecedores ativos</div>
+                <div class="indicator-value" id="indicadorFornecedores">0</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card indicator-card p-3">
+                <div class="indicator-label">Produtos com estoque baixo</div>
+                <div class="indicator-value text-warning" id="indicadorEstoqueBaixo">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-3">
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-signal me-2"></i>Pedidos por status</h5>
+                    <span class="badge bg-light text-dark">Pizza / Donut</span>
+                </div>
+                <div class="chart-placeholder mt-3">
+                    <canvas id="chartPedidosStatus"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Receita mensal</h5>
+                    <span class="badge bg-light text-dark">Linha</span>
+                </div>
+                <div class="chart-placeholder mt-3">
+                    <canvas id="chartVendasMensais"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-cubes me-2"></i>Top produtos vendidos</h5>
+                    <span class="badge bg-light text-dark">Barras</span>
+                </div>
+                    <div class="chart-placeholder mt-3">
+                    <canvas id="chartTopProdutos"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-warehouse me-2"></i>Distribuição de estoque</h5>
+                    <span class="badge bg-light text-dark">Barras agrupadas</span>
+                </div>
+                <div class="chart-placeholder mt-3">
+                    <canvas id="chartEstoque"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-handshake me-2"></i>Fornecedores (quantidade x valor)</h5>
+                    <span class="badge bg-light text-dark">Barras horizontal</span>
+                </div>
+                <div class="chart-placeholder mt-3">
+                    <canvas id="chartFornecedores"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card chart-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>Estatísticas de preço</h5>
+                    <span class="badge bg-light text-dark">Radar</span>
+                </div>
+                <div class="chart-placeholder mt-3">
+                    <canvas id="chartEstatisticasPreco"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    const apiBase = /*[[@{/api/dashboard}]]*/ '';
+    const charts = {};
+    const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function createChart(ctxId, config) {
+        const ctx = document.getElementById(ctxId);
+        if (!ctx) {
+            return null;
+        }
+        if (charts[ctxId]) {
+            charts[ctxId].destroy();
+        }
+        charts[ctxId] = new Chart(ctx, config);
+        return charts[ctxId];
+    }
+
+    function preencherIndicadores(indicadores) {
+        document.getElementById('indicadorUsuarios').textContent = Number(indicadores.totalUsuarios ?? 0);
+        document.getElementById('indicadorProdutos').textContent = Number(indicadores.totalProdutos ?? 0);
+        document.getElementById('indicadorPedidos').textContent = Number(indicadores.totalPedidos ?? 0);
+        document.getElementById('indicadorPedidosPeriodo').textContent = Number(indicadores.pedidosPeriodo ?? 0);
+        document.getElementById('indicadorReceita').textContent = currencyFormatter.format(Number(indicadores.receitaTotal ?? 0));
+        document.getElementById('indicadorTicketMedio').textContent = currencyFormatter.format(Number(indicadores.ticketMedio ?? 0));
+        document.getElementById('indicadorFornecedores').textContent = Number(indicadores.totalFornecedores ?? 0);
+        document.getElementById('indicadorEstoqueBaixo').textContent = Number(indicadores.produtosEstoqueBaixo ?? 0);
+    }
+
+    function atualizarPedidosStatus(dados) {
+        const possuiDados = Array.isArray(dados) && dados.length > 0;
+        const labels = possuiDados ? dados.map(item => item.status ?? 'Indefinido') : ['Sem dados'];
+        const values = possuiDados ? dados.map(item => Number(item.total ?? 0)) : [0];
+        createChart('chartPedidosStatus', {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#20c997'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    function atualizarVendasMensais(dados) {
+        const possuiDados = Array.isArray(dados) && dados.length > 0;
+        const labels = possuiDados ? dados.map(item => item.periodo) : ['Sem dados'];
+        const receita = possuiDados ? dados.map(item => Number(item.receita ?? 0)) : [0];
+        const pedidos = possuiDados ? dados.map(item => Number(item.pedidos ?? 0)) : [0];
+
+        createChart('chartVendasMensais', {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Receita (R$)',
+                        data: receita,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Pedidos',
+                        data: pedidos,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                        tension: 0.2,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        position: 'left',
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => currencyFormatter.format(value)
+                        }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function atualizarTopProdutos(dados) {
+        const possuiDados = Array.isArray(dados) && dados.length > 0;
+        const labels = possuiDados ? dados.map(item => item.nome ?? 'Produto') : ['Sem dados'];
+        const quantidade = possuiDados ? dados.map(item => Number(item.quantidadeVendida ?? 0)) : [0];
+        const receita = possuiDados ? dados.map(item => Number(item.receitaGerada ?? 0)) : [0];
+
+        createChart('chartTopProdutos', {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Quantidade vendida',
+                        data: quantidade,
+                        backgroundColor: '#0d6efd',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Receita (R$)',
+                        data: receita,
+                        backgroundColor: '#ffc107',
+                        borderRadius: 6,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function atualizarDistribuicaoEstoque(dados) {
+        const labels = ['Esgotado', 'Baixo (1-9)', 'Adequado (10-50)', 'Alto (> 50)'];
+        const valores = [
+            Number(dados?.esgotados ?? 0),
+            Number(dados?.baixo ?? 0),
+            Number(dados?.adequado ?? 0),
+            Number(dados?.alto ?? 0)
+        ];
+        createChart('chartEstoque', {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Qtd de produtos',
+                    data: valores,
+                    backgroundColor: ['#dc3545', '#ffc107', '#198754', '#0d6efd'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function atualizarFornecedores(dados) {
+        const possuiDados = Array.isArray(dados) && dados.length > 0;
+        const labels = possuiDados
+            ? dados.map(item => item.fornecedorNome ?? `Fornecedor ${item.fornecedorId}`)
+            : ['Sem dados'];
+        const quantidade = possuiDados ? dados.map(item => Number(item.quantidadeTotal ?? 0)) : [0];
+        const valor = possuiDados ? dados.map(item => Number(item.valorTotal ?? 0)) : [0];
+        createChart('chartFornecedores', {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Quantidade fornecida',
+                        data: quantidade,
+                        backgroundColor: '#0dcaf0'
+                    },
+                    {
+                        label: 'Valor (R$)',
+                        data: valor,
+                        backgroundColor: '#6f42c1',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: { beginAtZero: true },
+                    y1: {
+                        position: 'right',
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function atualizarEstatisticasPreco(dados) {
+        const labels = ['Média', 'Mediana', 'Moda', 'Variância', 'Desvio Padrão'];
+        const valores = [
+            Number(dados.media ?? 0),
+            Number(dados.mediana ?? 0),
+            Number(dados.moda ?? 0),
+            Number(dados.variancia ?? 0),
+            Number(dados.desvioPadrao ?? 0)
+        ];
+        createChart('chartEstatisticasPreco', {
+            type: 'radar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Preços de produtos (R$)',
+                    data: valores,
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => currencyFormatter.format(value)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function carregarDashboard() {
+        const inicio = document.getElementById('filtroInicio').value;
+        const fim = document.getElementById('filtroFim').value;
+        const limiteTop = document.getElementById('filtroTopProdutos').value;
+
+        const params = new URLSearchParams();
+        if (inicio) params.append('inicio', inicio);
+        if (fim) params.append('fim', fim);
+        params.append('limiteProdutos', limiteTop);
+        params.append('limiteFornecedores', 6);
+
+        const query = params.toString();
+        const url = query ? `${apiBase}/visao-completa?${query}` : `${apiBase}/visao-completa`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Erro ao buscar dados do dashboard');
+            }
+            const dados = await response.json();
+            preencherIndicadores(dados.indicadores ?? {});
+            atualizarPedidosStatus(dados.pedidosStatus ?? []);
+            atualizarVendasMensais(dados.vendasMensais ?? []);
+            atualizarTopProdutos(dados.topProdutos ?? []);
+            atualizarDistribuicaoEstoque(dados.estoque ?? {});
+            atualizarFornecedores(dados.fornecedores ?? []);
+            atualizarEstatisticasPreco(dados.estatisticasPrecos ?? {});
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao carregar dashboard. Verifique o console.');
+        }
+    }
+
+    function aplicarPeriodosRapidos(dias) {
+        const hoje = new Date();
+        const inicio = new Date();
+        inicio.setDate(hoje.getDate() - dias + 1);
+
+        document.getElementById('filtroInicio').value = inicio.toISOString().substring(0, 10);
+        document.getElementById('filtroFim').value = hoje.toISOString().substring(0, 10);
+    }
+
+    const quickButtons = document.querySelectorAll('.btn-quick-range');
+
+    document.getElementById('btnAplicarFiltros').addEventListener('click', () => {
+        quickButtons.forEach(btn => btn.classList.remove('active'));
+        carregarDashboard();
+    });
+
+    quickButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            quickButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const dias = Number(button.dataset.range ?? 0);
+            if (dias > 0) {
+                aplicarPeriodosRapidos(dias);
+            }
+            carregarDashboard();
+        });
+    });
+
+    document.getElementById('filtroTopProdutos').addEventListener('change', carregarDashboard);
+
+    // inicializa com período completo (sem filtros)
+    carregarDashboard();
+</script>
 </body>
 </html>
