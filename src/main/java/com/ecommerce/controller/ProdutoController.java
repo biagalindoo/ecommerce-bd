@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller para operações de Produto
- */
 @Controller
 @RequestMapping("/produtos")
 public class ProdutoController {
@@ -27,9 +24,6 @@ public class ProdutoController {
     @Autowired
     private FornecedorService fornecedorService;
     
-    /**
-     * Lista todos os produtos
-     */
     @GetMapping
     public String listar(@RequestParam(value = "nome", required = false) String nome,
                         Model model) {
@@ -47,9 +41,6 @@ public class ProdutoController {
         return "produtos/list";
     }
     
-    /**
-     * Formulário para novo produto
-     */
     @GetMapping("/novo")
     public String novoProduto(Model model) {
         model.addAttribute("produto", new Produto());
@@ -65,7 +56,6 @@ public class ProdutoController {
         if (produto == null) { return "redirect:/produtos"; }
         model.addAttribute("produto", produto);
         model.addAttribute("vinculos", fornecedorProdutoService.listarPorProduto(id));
-        // lista de fornecedores para facilitar vínculo (simples)
         model.addAttribute("fornecedores", fornecedorService.listarTodos());
         return "produtos/fornecedores";
     }
@@ -94,9 +84,6 @@ public class ProdutoController {
         return "redirect:/produtos/" + id + "/fornecedores";
     }
     
-    /**
-     * Salvar novo produto
-     */
     @PostMapping("/novo")
     public String salvarProduto(@ModelAttribute Produto produto) {
         try {
@@ -109,9 +96,6 @@ public class ProdutoController {
         }
     }
     
-    /**
-     * Formulário para editar produto
-     */
     @GetMapping("/editar/{id}")
     public String editarProduto(@PathVariable Integer id, Model model) {
         Produto produto = produtoService.buscarPorId(id).orElse(null);
@@ -122,9 +106,6 @@ public class ProdutoController {
         return "produtos/form";
     }
     
-    /**
-     * Atualizar produto
-     */
     @PostMapping("/editar")
     public String atualizarProduto(@ModelAttribute Produto produto) {
         try {
@@ -137,9 +118,6 @@ public class ProdutoController {
         }
     }
     
-    /**
-     * Excluir produto
-     */
     @GetMapping("/excluir/{id}")
     public String excluirProduto(@PathVariable Integer id) {
         try {

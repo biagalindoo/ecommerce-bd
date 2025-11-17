@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * DAO para operações de Usuario usando SQL puro
+ * DAO para operações de Usuario
  */
 @Repository
 public class UsuarioDAO {
@@ -22,9 +22,6 @@ public class UsuarioDAO {
     @Autowired
     private DatabaseConnection databaseConnection;
     
-    /**
-     * Lista todos os usuários
-     */
     public List<Usuario> listarTodos() {
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT id, email, senha_hash, cpf, primeiro_nome, sobrenome, data_nascimento FROM Usuario ORDER BY id ASC";
@@ -43,9 +40,6 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Busca usuário por ID
-     */
     public Optional<Usuario> buscarPorId(Integer id) {
         String sql = "SELECT id, email, senha_hash, cpf, primeiro_nome, sobrenome, data_nascimento FROM Usuario WHERE id = ?";
         
@@ -66,9 +60,6 @@ public class UsuarioDAO {
         return Optional.empty();
     }
     
-    /**
-     * Busca usuários por nome
-     */
     public List<Usuario> buscarPorNome(String nome) {
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT id, email, senha_hash, cpf, primeiro_nome, sobrenome, data_nascimento FROM Usuario WHERE primeiro_nome LIKE ? OR sobrenome LIKE ?";
@@ -92,9 +83,6 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Salva um novo usuário
-     */
     public Usuario salvar(Usuario usuario) {
         String sql = "INSERT INTO Usuario (email, senha_hash, cpf, primeiro_nome, sobrenome, data_nascimento) VALUES (?, ?, ?, ?, ?, ?)";
         
@@ -125,9 +113,6 @@ public class UsuarioDAO {
         return usuario;
     }
     
-    /**
-     * Atualiza um usuário
-     */
     public Usuario atualizar(Usuario usuario) {
         String sql = "UPDATE Usuario SET email = ?, senha_hash = ?, cpf = ?, primeiro_nome = ?, sobrenome = ?, data_nascimento = ? WHERE id = ?";
         
@@ -150,10 +135,7 @@ public class UsuarioDAO {
         
         return usuario;
     }
-    
-    /**
-     * Exclui um usuário
-     */
+
     public void excluir(Integer id) {
         String sql = "DELETE FROM Usuario WHERE id = ?";
         
@@ -168,9 +150,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Conta total de usuários
-     */
+
     public long contarTotal() {
         String sql = "SELECT COUNT(*) FROM Usuario";
         
@@ -188,9 +168,7 @@ public class UsuarioDAO {
         return 0;
     }
     
-    /**
-     * Verifica se email já existe
-     */
+    
     public boolean emailExiste(String email) {
         String sql = "SELECT COUNT(*) FROM Usuario WHERE email = ?";
         
@@ -211,9 +189,6 @@ public class UsuarioDAO {
         return false;
     }
     
-    /**
-     * Lista todos os usuários com informações completas
-     */
     public List<UsuarioCompleto> listarUsuariosCompletos() {
         String sql = "SELECT id, CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo, " +
                     "email, cpf, data_nascimento, " +
@@ -300,9 +275,7 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Mapeia resultado do ResultSet para objeto Usuario
-     */
+
     private Usuario mapearResultado(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));

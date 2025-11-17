@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Classe para gerenciar conexões com o banco de dados usando JDBC puro
+ * Classe para gerenciar conexões com o banco de dados
  */
 @Component
 public class DatabaseConnection {
@@ -28,9 +28,6 @@ public class DatabaseConnection {
         }
     }
     
-    /**
-     * Fecha uma conexão
-     */
     public void closeConnection(Connection connection) {
         if (connection != null) {
             try {

@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller para operações de Usuario
- */
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -19,9 +16,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
     
-    /**
-     * Lista todos os usuários
-     */
     @GetMapping
     public String listar(@RequestParam(value = "nome", required = false) String nome,
                         Model model) {
@@ -39,9 +33,6 @@ public class UsuarioController {
         return "usuarios/list";
     }
     
-    /**
-     * Formulário para novo usuário
-     */
     @GetMapping("/novo")
     public String novoUsuario(Model model) {
         model.addAttribute("usuario", new Usuario());
@@ -76,9 +67,6 @@ public class UsuarioController {
         }
     }
     
-    /**
-     * Formulário para editar usuário
-     */
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Integer id, Model model) {
         Usuario usuario = usuarioService.buscarPorId(id).orElse(null);
@@ -119,9 +107,6 @@ public class UsuarioController {
         }
     }
     
-    /**
-     * Excluir usuário
-     */
     @GetMapping("/excluir/{id}")
     public String excluirUsuario(@PathVariable Integer id) {
         try {

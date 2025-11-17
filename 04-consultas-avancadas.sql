@@ -32,6 +32,17 @@ FULL OUTER JOIN FornecedorProduto fp ON p.id = fp.produto_id
 FULL OUTER JOIN Fornecedor f ON fp.fornecedor_id = f.id
 ORDER BY produto_id, fornecedor_id;
 
+/*
+SELECT ... FROM Produto p
+LEFT JOIN FornecedorProduto fp ON p.id = fp.produto_id
+LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id
+UNION
+
+SELECT ... FROM FornecedorProduto fp
+LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id
+LEFT JOIN Produto p ON p.id = fp.produto_id
+WHERE p.id IS NULL;
+*/
 
 SELECT 
     p.id,

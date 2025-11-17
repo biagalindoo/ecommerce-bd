@@ -31,7 +31,7 @@ public class ConsultasAvancadasController {
         List<Map<String, Object>> usuarios = new ArrayList<>();
         
         try (Connection conn = databaseConnection.getConnection()) {
-            // Consulta Anti-Join: Usuários que nunca fizeram pedidos
+            // consulta Anti-Join de suários que nunca fizeram pedidos
             String sql = "SELECT " +
                 "u.id, " +
                 "CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS nome_completo, " +
@@ -60,7 +60,6 @@ public class ConsultasAvancadasController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Em caso de erro, mostrar dados de exemplo
             Map<String, Object> usuario1 = new HashMap<>();
             usuario1.put("id", 1);
             usuario1.put("nomeCompleto", "João Silva");
@@ -83,8 +82,7 @@ public class ConsultasAvancadasController {
         List<Map<String, Object>> produtos = new ArrayList<>();
         
         try (Connection conn = databaseConnection.getConnection()) {
-            // Simulação de FULL OUTER JOIN usando UNION de LEFT e RIGHT JOIN
-            // Mostra todos os produtos E todos os fornecedores, mesmo sem relacionamento
+            // mostra todos os produtos E todos os fornecedores, mesmo sem relacionamento
             String sql = "SELECT " +
                 "COALESCE(p.id, 0) AS produto_id, " +
                 "COALESCE(p.nome, 'Sem produto') AS nome_produto, " +

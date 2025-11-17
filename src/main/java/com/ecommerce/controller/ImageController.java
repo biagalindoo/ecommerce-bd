@@ -19,11 +19,9 @@ public class ImageController {
     @GetMapping("/grafico/{filename}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
         try {
-            // Tenta primeiro na pasta static
             Resource resource = new ClassPathResource("static/" + filename);
             
-            if (!resource.exists()) {
-                // Se não existir, tenta na pasta images/graficos
+            if (!resource.exists()) {   
                 resource = new ClassPathResource("static/images/graficos/" + filename);
             }
             

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * DAO para operações de Produto usando SQL puro
+ * DAO para operações de Produto
  */
 @Repository
 public class ProdutoDAO {
@@ -22,9 +22,6 @@ public class ProdutoDAO {
     @Autowired
     private DatabaseConnection databaseConnection;
     
-    /**
-     * Lista todos os produtos
-     */
     public List<Produto> listarTodos() {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto ORDER BY id ASC";
@@ -43,9 +40,6 @@ public class ProdutoDAO {
         return produtos;
     }
     
-    /**
-     * Busca produto por ID
-     */
     public Optional<Produto> buscarPorId(Integer id) {
         String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE id = ?";
         
@@ -66,9 +60,6 @@ public class ProdutoDAO {
         return Optional.empty();
     }
     
-    /**
-     * Busca produtos por nome
-     */
     public List<Produto> buscarPorNome(String nome) {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE nome LIKE ?";
@@ -90,9 +81,6 @@ public class ProdutoDAO {
         return produtos;
     }
     
-    /**
-     * Salva um novo produto
-     */
     public Produto salvar(Produto produto) {
         String sql = "INSERT INTO Produto (nome, descricao, preco, quantidade_estoque, armazem_id) VALUES (?, ?, ?, ?, ?)";
         
@@ -128,9 +116,6 @@ public class ProdutoDAO {
         return produto;
     }
     
-    /**
-     * Atualiza um produto
-     */
     public Produto atualizar(Produto produto) {
         String sql = "UPDATE Produto SET nome = ?, descricao = ?, preco = ?, quantidade_estoque = ?, armazem_id = ? WHERE id = ?";
         
@@ -157,9 +142,6 @@ public class ProdutoDAO {
         return produto;
     }
     
-    /**
-     * Exclui um produto
-     */
     public void excluir(Integer id) {
         String sql = "DELETE FROM Produto WHERE id = ?";
         
@@ -174,9 +156,6 @@ public class ProdutoDAO {
         }
     }
     
-    /**
-     * Busca produtos com estoque baixo
-     */
     public List<Produto> buscarProdutosComEstoqueBaixo(int limite) {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE quantidade_estoque < ?";
@@ -198,9 +177,6 @@ public class ProdutoDAO {
         return produtos;
     }
     
-    /**
-     * Busca produtos esgotados
-     */
     public List<Produto> buscarProdutosEsgotados() {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT id, nome, descricao, preco, quantidade_estoque, armazem_id FROM Produto WHERE quantidade_estoque = 0";
@@ -219,9 +195,6 @@ public class ProdutoDAO {
         return produtos;
     }
     
-    /**
-     * Calcula valor total do estoque
-     */
     public BigDecimal calcularValorTotalEstoque() {
         String sql = "SELECT SUM(preco * quantidade_estoque) FROM Produto";
         
@@ -240,9 +213,6 @@ public class ProdutoDAO {
         return BigDecimal.ZERO;
     }
     
-    /**
-     * Conta total de produtos
-     */
     public long contarTotal() {
         String sql = "SELECT COUNT(*) FROM Produto";
         
@@ -261,9 +231,6 @@ public class ProdutoDAO {
     }
 
     
-    /**
-     * Análise de produtos por faixa de preço
-     */
     public List<AnalisePreco> analisarPorPreco() {
         String sql = "SELECT " +
                     "CASE " +
@@ -303,9 +270,7 @@ public class ProdutoDAO {
         return analises;
     }
     
-    /**
-     * Lista produtos com responsáveis (JOIN com Usuario)
-     */
+
     public List<ProdutoResponsavel> listarProdutosComResponsaveis() {
         String sql = "SELECT p.nome AS produto, p.preco, p.quantidade_estoque, p.armazem_id, " +
                     "CONCAT(u.primeiro_nome, ' ', u.sobrenome) AS responsavel_armazem, " +
@@ -340,9 +305,7 @@ public class ProdutoDAO {
         return produtos;
     }
     
-    /**
-     * Mapeia resultado do ResultSet para objeto Produto
-     */
+
     private Produto mapearResultado(ResultSet rs) throws SQLException {
         Produto produto = new Produto();
         produto.setId(rs.getInt("id"));

@@ -115,10 +115,7 @@ public class PedidoDAO {
         }
     }
     
-    /**
-     * Chama procedure para atualizar status do pedido com validação
-     * Se a procedure não existir, faz UPDATE direto (o trigger ainda funciona)
-     */
+
     public void atualizarStatusViaProcedure(Integer pedidoId, String novoStatus) {
         // Tenta chamar a procedure primeiro
         String call = "CALL sp_atualizar_status_pedido(?, ?)";
@@ -129,19 +126,14 @@ public class PedidoDAO {
             stmt.setString(2, novoStatus);
             stmt.execute();
             System.out.println("Procedure executada com sucesso!");
-            return; // Sucesso, sai da função
+            return;
         } catch (SQLException e) {
             // Se a procedure não existir (erro 1305) ou outro erro, faz UPDATE direto
-            // O trigger ainda vai funcionar porque é AFTER UPDATE
             System.out.println("Procedure não disponível ou erro. Fazendo UPDATE direto (trigger ainda funcionará)...");
             atualizarStatusDireto(pedidoId, novoStatus);
         }
     }
     
-    /**
-     * Atualiza status diretamente (fallback se procedure não existir)
-     * O trigger AFTER UPDATE ainda será disparado
-     */
     private void atualizarStatusDireto(Integer pedidoId, String novoStatus) {
         String sql = "UPDATE Pedido SET status_pedido = ? WHERE id = ?";
         try (Connection conn = databaseConnection.getConnection();
@@ -160,9 +152,6 @@ public class PedidoDAO {
         }
     }
 
-    /**
-     * Calcula desconto usando função SQL fn_calcular_desconto_por_valor
-     */
     public BigDecimal calcularDescontoPorValor(BigDecimal valorTotal) {
         if (valorTotal == null || valorTotal.compareTo(BigDecimal.ZERO) <= 0) {
             return BigDecimal.ZERO;
@@ -193,9 +182,6 @@ public class PedidoDAO {
         return BigDecimal.ZERO;
     }
     
-    /**
-     * Calcula desconto manualmente (fallback se função não existir)
-     */
     private BigDecimal calcularDescontoManual(BigDecimal valorTotal) {
         if (valorTotal.compareTo(new BigDecimal("1000.00")) >= 0) {
             return valorTotal.multiply(new BigDecimal("0.10"));
