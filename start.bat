@@ -1,7 +1,7 @@
 @echo off
 echo  Iniciando E-commerce Dashboard...
 
-REM Verificar se o Docker está rodando
+REM 
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
     echo  Docker não está rodando. Por favor, inicie o Docker Desktop.
@@ -9,7 +9,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Verificar se o arquivo .env existe
+REM
 if not exist .env (
     echo   Arquivo .env não encontrado. Criando a partir do template...
     copy env.example .env
@@ -19,15 +19,15 @@ if not exist .env (
     exit /b 1
 )
 
-REM Construir e iniciar os containers
+REM 
 echo  Construindo e iniciando containers...
 docker-compose up --build -d
 
-REM Aguardar a aplicação ficar pronta
+REM 
 echo  Aguardando aplicação ficar pronta...
 timeout /t 10 /nobreak >nul
 
-REM Verificar se a aplicação está rodando
+REM 
 curl -f http://localhost:8080/ecommerce-dashboard/dashboard >nul 2>&1
 if %errorlevel% equ 0 (
     echo  Aplicação iniciada com sucesso!
