@@ -228,8 +228,8 @@
         <div class="col-xl-6">
             <div class="card chart-card p-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>Estatísticas de preço</h5>
-                    <span class="badge bg-light text-dark">Radar</span>
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Estatísticas de preço</h5>
+                    <span class="badge bg-light text-dark">Barras</span>
                 </div>
                 <div class="chart-placeholder mt-3">
                     <canvas id="chartEstatisticasPreco"></canvas>
@@ -293,7 +293,21 @@
 
     function atualizarVendasMensais(dados) {
         const possuiDados = Array.isArray(dados) && dados.length > 0;
-        const labels = possuiDados ? dados.map(item => item.periodo) : ['Sem dados'];
+        
+        // Formata os períodos para um formato mais legível (ex: "2024-01" -> "Jan/2024")
+        const formatarPeriodo = (periodo) => {
+            if (!periodo || periodo === 'Sem dados') return periodo;
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const partes = periodo.split('-');
+            if (partes.length === 2) {
+                const mes = parseInt(partes[1]) - 1;
+                const ano = partes[0];
+                return `${meses[mes]}/${ano}`;
+            }
+            return periodo;
+        };
+        
+        const labels = possuiDados ? dados.map(item => formatarPeriodo(item.periodo)) : ['Sem dados'];
         const receita = possuiDados ? dados.map(item => Number(item.receita ?? 0)) : [0];
         const pedidos = possuiDados ? dados.map(item => Number(item.pedidos ?? 0)) : [0];
 
@@ -308,7 +322,13 @@
                         borderColor: '#0d6efd',
                         backgroundColor: 'rgba(13, 110, 253, 0.2)',
                         tension: 0.3,
-                        yAxisID: 'y'
+                        yAxisID: 'y',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#0d6efd',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        fill: true
                     },
                     {
                         label: 'Pedidos',
@@ -316,15 +336,62 @@
                         borderColor: '#198754',
                         backgroundColor: 'rgba(25, 135, 84, 0.2)',
                         tension: 0.2,
-                        yAxisID: 'y1'
+                        yAxisID: 'y1',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#198754',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        fill: true
                     }
                 ]
             },
             options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    // Receita
+                                    label += currencyFormatter.format(context.parsed.y);
+                                } else {
+                                    // Pedidos
+                                    label += context.parsed.y.toLocaleString('pt-BR') + ' pedidos';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Período',
+                            font: { size: 12, weight: 'bold' }
+                        }
+                    },
                     y: {
                         position: 'left',
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Receita (R$)',
+                            font: { size: 12, weight: 'bold' }
+                        },
                         ticks: {
                             callback: value => currencyFormatter.format(value)
                         }
@@ -332,7 +399,19 @@
                     y1: {
                         position: 'right',
                         beginAtZero: true,
-                        grid: { drawOnChartArea: false }
+                        title: {
+                            display: true,
+                            text: 'Quantidade de Pedidos',
+                            font: { size: 12, weight: 'bold' }
+                        },
+                        grid: { 
+                            drawOnChartArea: false 
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('pt-BR');
+                            }
+                        }
                     }
                 }
             }
@@ -413,6 +492,7 @@
             : ['Sem dados'];
         const quantidade = possuiDados ? dados.map(item => Number(item.quantidadeTotal ?? 0)) : [0];
         const valor = possuiDados ? dados.map(item => Number(item.valorTotal ?? 0)) : [0];
+        
         createChart('chartFornecedores', {
             type: 'bar',
             data: {
@@ -421,23 +501,76 @@
                     {
                         label: 'Quantidade fornecida',
                         data: quantidade,
-                        backgroundColor: '#0dcaf0'
+                        backgroundColor: '#0dcaf0',
+                        xAxisID: 'x',
+                        borderRadius: 6
                     },
                     {
                         label: 'Valor (R$)',
                         data: valor,
                         backgroundColor: '#6f42c1',
-                        yAxisID: 'y1'
+                        xAxisID: 'x1',
+                        borderRadius: 6
                     }
                 ]
             },
             options: {
                 indexAxis: 'y',
+                responsive: true,
                 scales: {
-                    x: { beginAtZero: true },
-                    y1: {
-                        position: 'right',
-                        grid: { drawOnChartArea: false }
+                    x: {
+                        position: 'bottom',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantidade',
+                            font: { size: 12, weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('pt-BR');
+                            }
+                        }
+                    },
+                    x1: {
+                        position: 'top',
+                        beginAtZero: true,
+                        grid: { 
+                            drawOnChartArea: false 
+                        },
+                        title: {
+                            display: true,
+                            text: 'Valor (R$)',
+                            font: { size: 12, weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return currencyFormatter.format(value);
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    // Quantidade
+                                    label += context.parsed.x.toLocaleString('pt-BR') + ' unidades';
+                                } else {
+                                    // Valor
+                                    label += currencyFormatter.format(context.parsed.x);
+                                }
+                                return label;
+                            }
+                        }
                     }
                 }
             }
@@ -445,30 +578,55 @@
     }
 
     function atualizarEstatisticasPreco(dados) {
-        const labels = ['Média', 'Mediana', 'Moda', 'Variância', 'Desvio Padrão'];
+        // Mostra apenas métricas comparáveis em R$ (sem variância que tem escala diferente)
+        const labels = ['Média', 'Mediana', 'Moda', 'Desvio Padrão'];
         const valores = [
             Number(dados.media ?? 0),
             Number(dados.mediana ?? 0),
             Number(dados.moda ?? 0),
-            Number(dados.variancia ?? 0),
             Number(dados.desvioPadrao ?? 0)
         ];
+        
+        // Adiciona a variância como informação adicional no título/tooltip
+        const variancia = Number(dados.variancia ?? 0);
+        
         createChart('chartEstatisticasPreco', {
-            type: 'radar',
+            type: 'bar',
             data: {
                 labels,
                 datasets: [{
-                    label: 'Preços de produtos (R$)',
+                    label: 'Valor (R$)',
                     data: valores,
-                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                    borderColor: '#0d6efd',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#0d6efd'
+                    backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545'],
+                    borderRadius: 6,
+                    borderWidth: 1
                 }]
             },
             options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                if (context.label === 'Desvio Padrão' && variancia > 0) {
+                                    return `Variância: ${currencyFormatter.format(variancia)}`;
+                                }
+                                return '';
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: variancia > 0 ? `Variância: ${currencyFormatter.format(variancia)}` : '',
+                        position: 'bottom',
+                        font: { size: 11, style: 'italic' }
+                    }
+                },
                 scales: {
-                    r: {
+                    y: {
                         beginAtZero: true,
                         ticks: {
                             callback: value => currencyFormatter.format(value)
