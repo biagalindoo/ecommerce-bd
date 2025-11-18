@@ -37,7 +37,6 @@ mysql -u root -p ecommerce_db < 01-create-tables.sql
 mysql -u root -p ecommerce_db < 02-populate-tables.sql
 mysql -u root -p ecommerce_db < 03-consultas.sql
 mysql -u root -p ecommerce_db < 04-consultas-avancadas.sql
-mysql -u root -p ecommerce_db < 05-executar-indices-visoes.sql
 mysql -u root -p ecommerce_db < 06-funcoes.sql
 mysql -u root -p ecommerce_db < 07-procedures.sql
 mysql -u root -p ecommerce_db < 08-triggers.sql
@@ -97,7 +96,6 @@ Acesse: http://localhost:8080/ecommerce-dashboard/
 ├── 02-populate-tables.sql
 ├── 03-consultas.sql
 ├── 04-consultas-avancadas.sql
-├── 05-executar-indices-visoes.sql
 ├── 06-funcoes.sql
 ├── 07-procedures.sql
 └── 08-triggers.sql

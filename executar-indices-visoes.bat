@@ -22,15 +22,6 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo Executando 05-executar-indices-visoes.sql...
-%MYSQL_PATH% -u root -p ecommerce < 05-executar-indices-visoes.sql
-if %errorlevel% neq 0 (
-    echo ERRO ao executar 05-executar-indices-visoes.sql
-    pause
-    exit /b 1
-)
-
-echo.
 echo Scripts executados com sucesso!
 echo.
 echo Para verificar se os indices foram criados, execute:
