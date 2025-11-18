@@ -294,7 +294,6 @@
     function atualizarVendasMensais(dados) {
         const possuiDados = Array.isArray(dados) && dados.length > 0;
         
-        // Formata os períodos para um formato mais legível (ex: "2024-01" -> "Jan/2024")
         const formatarPeriodo = (periodo) => {
             if (!periodo || periodo === 'Sem dados') return periodo;
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];

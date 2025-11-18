@@ -3,6 +3,7 @@ CREATE INDEX idx_produto_preco ON Produto(preco);
 CREATE INDEX idx_pedido_status ON Pedido(status_pedido);
 CREATE INDEX idx_pedido_data ON Pedido(data_pedido);
 
+
 SELECT 
     u.id,
     u.primeiro_nome,
@@ -19,30 +20,34 @@ WHERE p.id IS NULL
 ORDER BY u.data_nascimento DESC;
 
 
+
+-- todos os produtos (mesmo sem fornecedor)
 SELECT 
-    COALESCE(p.id, fp.produto_id) AS produto_id,
+    COALESCE(p.id, 0) AS produto_id,
     COALESCE(p.nome, 'Produto não encontrado') AS nome_produto,
     COALESCE(p.preco, 0) AS preco,
-    COALESCE(f.id, fp.fornecedor_id) AS fornecedor_id,
+    COALESCE(f.id, 0) AS fornecedor_id,
     COALESCE(f.nome_fantasia, 'Fornecedor não encontrado') AS nome_fornecedor,
     COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida,
     COALESCE(fp.custo_unitario_compra, 0) AS custo_compra
 FROM Produto p
-FULL OUTER JOIN FornecedorProduto fp ON p.id = fp.produto_id
-FULL OUTER JOIN Fornecedor f ON fp.fornecedor_id = f.id
-ORDER BY produto_id, fornecedor_id;
-
-/*
-SELECT ... FROM Produto p
 LEFT JOIN FornecedorProduto fp ON p.id = fp.produto_id
 LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id
 UNION
-
-SELECT ... FROM FornecedorProduto fp
-LEFT JOIN Fornecedor f ON fp.fornecedor_id = f.id
-LEFT JOIN Produto p ON p.id = fp.produto_id
-WHERE p.id IS NULL;
-*/
+-- fornecedores sem produtos relacionados agora
+SELECT 
+    COALESCE(p.id, 0) AS produto_id,
+    COALESCE(p.nome, 'Produto não encontrado') AS nome_produto,
+    COALESCE(p.preco, 0) AS preco,
+    f.id AS fornecedor_id,
+    f.nome_fantasia AS nome_fornecedor,
+    COALESCE(fp.quantidade_fornecida, 0) AS quantidade_fornecida,
+    COALESCE(fp.custo_unitario_compra, 0) AS custo_compra
+FROM Fornecedor f
+LEFT JOIN FornecedorProduto fp ON f.id = fp.fornecedor_id
+LEFT JOIN Produto p ON fp.produto_id = p.id
+WHERE p.id IS NULL
+ORDER BY produto_id, fornecedor_id;
 
 SELECT 
     p.id,
